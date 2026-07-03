@@ -16,14 +16,9 @@
     box-sizing: border-box;
 }
 
-body{
-    font-family: var(--font-body);
-    color: var(--text-white);
-
-    background:
-        linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)),
-        url("images/1000203876.png");
-
+body {
+    background: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.65)),
+                url("images/1000203876.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
