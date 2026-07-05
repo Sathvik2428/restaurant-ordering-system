@@ -10,7 +10,6 @@
 <body>
 
     <header class="top-header">
-        <div class="menu-icon">&#9776;</div>
         <div class="logo-center">
             <div class="logo-circle">
                 <span>R</span>
@@ -20,9 +19,7 @@
                 <p>TRADITION &bull; TASTE &bull; TRUST</p>
             </div>
         </div>
-        <div class="cart-icon">
-            &#128722; <span class="cart-badge">3</span>
-        </div>
+        
     </header>
 
     <div class="page-title">
@@ -45,11 +42,11 @@
 
     <div class="categories-wrapper">
         <div class="categories-container">
-            <div class="category active">
+            <div class="category active" onclick="showHomeMenu()">
                 <div class="cat-icon">&#11088;</div>
                 <p>Category</p>
             </div>
-            <div class="category">
+            <div class="category" onclick="showBreakfast()">
                 <div class="cat-icon">&#127835;</div>
                 <p>All Day Breakfast</p>
             </div>
@@ -142,16 +139,9 @@
                 <p>Accompaniments</p>
             </div>
         </div>
-        <div class="scroll-indicators">
-            <div class="indicator active"></div>
-            <div class="indicator"></div>
-            <div class="indicator"></div>
-            <div class="indicator"></div>
-        </div>
-        <p class="scroll-hint">&larr; Slide to explore more categories &rarr;</p>
-    </div>
-
-    <section class="menu-section">
+        
+        
+    <section class="menu-section" id="recommended-section">
         <div class="section-header">
             <h2><span class="gold-icon">&#11088;</span> RECOMMENDED</h2>
             <a href="#" class="view-all">View All &gt;</a>
@@ -217,45 +207,69 @@
             </div>
         </div>
     </section>
+        
 
-    <div class="section-divider">
-        <div class="line"></div>
-        <div class="flower">&#10043;</div>
-        <div class="line"></div>
+            
+    </section>
+    <section class="menu-section" id="breakfast-section" style="display:none;">
+
+    <div class="section-header">
+        <h2>🍽 All Day Breakfast</h2>
     </div>
 
-    <section class="menu-section starters-padding">
-        <div class="section-header">
-            <h2><span class="gold-icon">&#127835;</span> STARTERS</h2>
-            <a href="#" class="view-all">View All &gt;</a>
-        </div>
-        
-        <div class="cards-scroll-container">
-            <div class="food-card">
-                <div class="card-image">
-                    <img src="https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=500&auto=format&fit=crop&q=60" alt="Chicken 65">
-                </div>
-                <div class="card-content">
-                    <h3>Chicken 65</h3>
-                    <div class="price-action">
-                        <span class="price">&#8377;220</span>
-                    </div>
-                </div>
-            </div>
+    <div class="cards-scroll-container">
 
-            <div class="food-card">
-                <div class="card-image">
-                    <img src="https://images.unsplash.com/photo-1599487405270-87ce80327734?w=500&auto=format&fit=crop&q=60" alt="Paneer 65">
-                </div>
-                <div class="card-content">
-                    <h3>Paneer 65</h3>
-                    <div class="price-action">
-                        <span class="price">&#8377;200</span>
-                    </div>
+        <div class="food-card">
+            <div class="card-content">
+                <h3>Idli (2 Pieces)</h3>
+                <p>Soft, steamed South Indian savory cakes made from rice and lentil batter.</p>
+
+                <div class="price-action">
+                    <span class="price">₹60</span>
+                    <button class="add-btn">+</button>
                 </div>
             </div>
         </div>
-    </section>
+
+        <div class="food-card">
+            <div class="card-content">
+                <h3>Idli (2 Pieces) + Vada (1 Piece)</h3>
+                <p>A filling South Indian breakfast combo of steamed idli and crispy vada.</p>
+
+                <div class="price-action">
+                    <span class="price">₹90</span>
+                    <button class="add-btn">+</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="food-card">
+            <div class="card-content">
+                <h3>Idli (1 Piece) + Vada (1 Piece)</h3>
+                <p>A classic combo featuring steamed rice cake and deep fried savory lentil doughnut.</p>
+
+                <div class="price-action">
+                    <span class="price">₹70</span>
+                    <button class="add-btn">+</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="food-card">
+            <div class="card-content">
+                <h3>Vada (1 Piece)</h3>
+                <p>A crispy, deep fried savory South Indian fritter made from urad dal.</p>
+
+                <div class="price-action">
+                    <span class="price">₹35</span>
+                    <button class="add-btn">+</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</section>
 
     <div class="bottom-spacer"></div>
 
@@ -265,7 +279,7 @@
                 &#128722; <span class="cart-badge-large">3</span>
             </div>
             <div class="cart-text">
-                <p>3 Items in Cart</p>
+                <p>Items in Cart</p>
                 <h4>&#8377;560</h4>
             </div>
         </div>
@@ -290,6 +304,34 @@
     </a>
 
 </nav>
+<script>
 
+function showBreakfast(){
+
+    // Hide Recommended section
+    document.getElementById("recommended-section").style.display = "none";
+
+    // Show Breakfast section
+    document.getElementById("breakfast-section").style.display = "block";
+
+    // Scroll to Breakfast section
+    document.getElementById("breakfast-section").scrollIntoView({
+        behavior: "smooth"
+    });
+
+}
+
+</script>
+function showHomeMenu(){
+
+    document.getElementById("recommended-section").style.display = "block";
+
+    document.getElementById("breakfast-section").style.display = "none";
+
+    document.getElementById("recommended-section").scrollIntoView({
+        behavior:"smooth"
+    });
+
+}
 </body>
 </html>
