@@ -311,90 +311,99 @@ header {
    Mobile Responsive Design
 =========================== */
 
-@media (max-width:768px){
+@media (max-width: 768px) {
 
-header{
-    flex-direction:column;
-    gap:15px;
-    padding:15px;
-}
+    html,
+    body {
+        width: 100%;
+        height: auto;
+        min-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
 
-.main-nav ul{
-    gap:18px;
-    flex-wrap:wrap;
-    justify-content:center;
-}
+    header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
 
-.hero-title{
-    font-size:3rem;
-}
+    .main-nav ul {
+        gap: 18px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
 
-.hero-subtitle{
-    font-size:0.9rem;
-    letter-spacing:2px;
-}
+    .hero-title {
+        font-size: 2.8rem;
+        line-height: 1.1;
+    }
 
-.action-steps{
-    width:90%;
-    padding:10px;
-}
+    .hero-subtitle {
+        font-size: 0.9rem;
+        letter-spacing: 2px;
+    }
 
-.step-text{
-    font-size:0.8rem;
-    letter-spacing:1px;
-}
+    .action-steps {
+        width: 90%;
+        padding: 10px;
+    }
 
-.btn-start-ordering{
-    width: 320px;
-    max-width: 90%;
-    min-height: 60px;
-    font-size: 1rem;
-    white-space: nowrap;
-    justify-content: center;
-}
+    .step-text {
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+    }
 
-.table-card{
-    width:90%;
-    max-width:350px;
-    padding:20px;
-}
+    .btn-start-ordering {
+        width: 320px;
+        max-width: 90%;
+        min-height: 60px;
+        font-size: 1rem;
+        white-space: nowrap;
+        justify-content: center;
+    }
 
-.bottom-curve{
-    display:none;
-}
-.logo-text h1{
-    font-size:0.8rem;
-}
+    .table-card {
+        width: 90%;
+        max-width: 350px;
+        padding: 20px;
+    }
 
-.logo-text p{
-    font-size:0.45rem;
-    letter-spacing:2px;
-}
+    .bottom-curve {
+        display: none;
+    }
 
-.btn-order-now{
-    display:none;
-}
+    .logo-text h1 {
+        font-size: 0.8rem;
+    }
 
-.welcome-badge{
-    font-size:0.8rem;
-    letter-spacing:3px;
-}
+    .logo-text p {
+        font-size: 0.45rem;
+        letter-spacing: 2px;
+    }
 
-.hero-title{
-    font-size:2.8rem;
-    line-height:1.1;
-}
+    .btn-order-now {
+        display: none;
+    }
 
-.hero-section{
-    min-height:100vh;
-    padding:20px;
-}
+    .welcome-badge {
+        font-size: 0.8rem;
+        letter-spacing: 3px;
+    }
 
-.main-nav a{
-    font-size:0.85rem;
-}
+    .main-nav a {
+        font-size: 0.85rem;
+    }
 
-.table-number{
-    font-size:1.6rem;
-}
+    .table-number {
+        font-size: 1.6rem;
+    }
+
+    /* IMPORTANT: allow the home page to scroll */
+    .hero-section {
+        min-height: 100vh;
+        height: auto;
+        padding: 20px;
+        overflow: visible;
+    }
 }
