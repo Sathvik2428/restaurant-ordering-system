@@ -3,333 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu - Rajathgiri Place</title>
+    <title>Menu - Rajathadri Palace</title>
     <link rel="stylesheet" href="menu.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-    </head>
+</head>
 <body>
 
-    <header class="top-header">
-        <div class="logo-center">
-            <div class="logo-circle">
-                <span>R</span>
-            </div>
-            <div class="logo-text">
-                <h1>RAJATHGIRI PLACE</h1>
-                <p>TRADITION &bull; TASTE &bull; TRUST</p>
-            </div>
+<header class="top-header">
+    <div class="logo-center">
+        <div class="logo-circle"><span>R</span></div>
+        <div class="logo-text">
+            <h1>RAJATHADRI PALACE</h1>
+            <p>TRADITION • TASTE • TRUST</p>
         </div>
-        
-    </header>
+    </div>
+    <div class="cart-icon" onclick="openCart()">🛒<span class="cart-badge" id="topCartCount">0</span></div>
+</header>
 
-    <div class="page-title">
+<div class="page-title">
     <div class="menu-heading">
         <span class="diamond">◆</span>
         <h2>MENU</h2>
         <span class="diamond">◆</span>
     </div>
-
     <div class="menu-design">❦</div>
+</div>
+
+<div class="search-bar-container">
+    <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input id="searchInput" type="text" placeholder="Search for food..." oninput="searchMenu(this.value)">
+        <span class="filter-icon">⚙</span>
     </div>
+</div>
 
-    <div class="search-bar-container">
-        <div class="search-bar">
-            <span class="search-icon">&#128269;</span>
-            <input type="text" placeholder="Search for food...">
-            <span class="filter-icon">&#9881;</span>
-        </div>
-    </div>
+<div class="categories-wrapper">
+    <div class="categories-container" id="categories"></div>
+    <div class="scroll-hint">← Swipe categories →</div>
+</div>
 
-    <div class="categories-wrapper">
-        <div class="categories-container">
-            <div class="category active" onclick="showHomeMenu()">
-                <div class="cat-icon">&#11088;</div>
-                <p>Category</p>
-            </div>
-            <div class="category" onclick="showBreakfast()">
-                <div class="cat-icon">&#127835;</div>
-                <p>All Day Breakfast</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127838;</div>
-                <p>South Indian</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127835;</div>
-                <p>Meal</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127836;</div>
-                <p>Dosa</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127865;</div>
-                <p>Desserts</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Drinks</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Hot Beverages</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Evening Specials</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Platter</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Soups</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Salads</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Starters</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Tandoori Starters</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Main Course</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Rice and Biriyani</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Rice</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Fried Rice and Noodles</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Pizza and Pasta</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Sandwiches</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Snacks and chaat</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Kid specials</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Breads</p>
-            </div>
-            <div class="category">
-                <div class="cat-icon">&#127846;</div>
-                <p>Accompaniments</p>
-            </div>
-        </div>
-        
-        
-    <section class="menu-section" id="recommended-section">
-        <div class="section-header">
-            <h2><span class="gold-icon">&#11088;</span> RECOMMENDED</h2>
-            <a href="#" class="view-all">View All &gt;</a>
-        </div>
-        
-        <div class="cards-scroll-container">
-            <div class="food-card">
-                <div class="card-image">
-                    <span class="tag">Bestseller</span>
-                    <img src="https://images.unsplash.com/photo-1631452180519-c014fe946bc0?w=500&auto=format&fit=crop&q=60" alt="Paneer Butter Masala">
-                </div>
-                <div class="card-content">
-                    <h3>Paneer Butter Masala</h3>
-                    <p>Cottage cheese cooked in rich buttery tomato gravy.</p>
-                    <div class="price-action">
-                        <span class="price">&#8377;240</span>
-                        <button class="add-btn">+</button>
-                    </div>
-                </div>
-            </div>
+<main id="menuContainer"></main>
 
-            <div class="food-card">
-                <div class="card-image">
-                    <span class="tag">Chef's Special</span>
-                    <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=60" alt="Chicken Biryani">
-                </div>
-                <div class="card-content">
-                    <h3>Chicken Biryani</h3>
-                    <p>Aromatic basmati rice cooked with spicy chicken.</p>
-                    <div class="price-action">
-                        <span class="price">&#8377;280</span>
-                        <button class="add-btn">+</button>
-                    </div>
-                </div>
-            </div>
+<div class="bottom-spacer"></div>
 
-            <div class="food-card">
-                <div class="card-image">
-                    <img src="https://images.unsplash.com/photo-1605338166549-0d2948679f18?w=500&auto=format&fit=crop&q=60" alt="Gobi Manchurian">
-                </div>
-                <div class="card-content">
-                    <h3>Gobi Manchurian</h3>
-                    <p>Crispy cauliflower tossed in manchurian sauce.</p>
-                    <div class="price-action">
-                        <span class="price">&#8377;180</span>
-                        <button class="add-btn">+</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="food-card">
-                <div class="card-image">
-                    <img src="https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=500&auto=format&fit=crop&q=60" alt="Masala Dosa">
-                </div>
-                <div class="card-content">
-                    <h3>Masala Dosa</h3>
-                    <p>Crispy dosa with spicy potato filling.</p>
-                    <div class="price-action">
-                        <span class="price">&#8377;120</span>
-                        <button class="add-btn">+</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-        
-
-            
-    </section>
-    <section class="menu-section" id="breakfast-section" style="display:none;">
-
-    <div class="section-header">
-        <h2>🍽 All Day Breakfast</h2>
-    </div>
-
-    <div class="cards-scroll-container">
-
-        <div class="food-card">
-            <div class="card-content">
-                <h3>Idli (2 Pieces)</h3>
-                <p>Soft, steamed South Indian savory cakes made from rice and lentil batter.</p>
-
-                <div class="price-action">
-                    <span class="price">₹60</span>
-                    <button class="add-btn">+</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="food-card">
-            <div class="card-content">
-                <h3>Idli (2 Pieces) + Vada (1 Piece)</h3>
-                <p>A filling South Indian breakfast combo of steamed idli and crispy vada.</p>
-
-                <div class="price-action">
-                    <span class="price">₹90</span>
-                    <button class="add-btn">+</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="food-card">
-            <div class="card-content">
-                <h3>Idli (1 Piece) + Vada (1 Piece)</h3>
-                <p>A classic combo featuring steamed rice cake and deep fried savory lentil doughnut.</p>
-
-                <div class="price-action">
-                    <span class="price">₹70</span>
-                    <button class="add-btn">+</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="food-card">
-            <div class="card-content">
-                <h3>Vada (1 Piece)</h3>
-                <p>A crispy, deep fried savory South Indian fritter made from urad dal.</p>
-
-                <div class="price-action">
-                    <span class="price">₹35</span>
-                    <button class="add-btn">+</button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-</section>
-
-    <div class="bottom-spacer"></div>
-
-    <div class="sticky-cart-bar">
+<div class="sticky-cart-bar">
     <div class="cart-details">
         <div class="cart-icon-large">
-            &#128722; <span class="cart-badge-large">0</span>
+            🛒 <span class="cart-badge-large" id="cartCount">0</span>
         </div>
-
         <div class="cart-text">
             <p>Items in Cart</p>
-            <h4>&#8377;0</h4>
+            <h4 id="cartTotal">₹0</h4>
         </div>
     </div>
+    <button class="view-cart-btn" onclick="openCart()">VIEW CART →</button>
+</div>
 
-    <button class="view-cart-btn">VIEW CART &rarr;</button>
-    </div>
-
-    <nav class="bottom-nav">
-
-    <a href="menu.html" class="nav-item active">
-        <span class="icon">&#128161;</span>
-        <p>Menu</p>
+<nav class="bottom-nav">
+    <a href="#" class="nav-item active" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
+        <span class="icon">🍽️</span><p>Menu</p>
     </a>
-
     <a href="order-history.html" class="nav-item">
-        <span class="icon">&#128203;</span>
-        <p>Order History</p>
+        <span class="icon">📋</span><p>Order History</p>
     </a>
-
 </nav>
-<script>
 
-function showBreakfast(){
+<div id="cartModal" class="cart-modal" onclick="closeCart(event)">
+    <div class="cart-panel" onclick="event.stopPropagation()">
+        <div class="cart-panel-header">
+            <h2>Your Cart</h2>
+            <button onclick="closeCart()">×</button>
+        </div>
+        <div id="cartItems"></div>
+        <div class="cart-total-row">
+            <strong>Total</strong>
+            <strong id="modalTotal">₹0</strong>
+        </div>
+        <button class="clear-cart" onclick="clearCart()">CLEAR CART</button>
+    </div>
+</div>
 
-    // Hide Recommended section
-    document.getElementById("recommended-section").style.display = "none";
-
-    // Show Breakfast section
-    document.getElementById("breakfast-section").style.display = "block";
-
-    // Scroll to Breakfast section
-    document.getElementById("breakfast-section").scrollIntoView({
-        behavior: "smooth"
-    });
-
-}
-
-</script>
-function showHomeMenu(){
-
-    document.getElementById("recommended-section").style.display = "block";
-
-    document.getElementById("breakfast-section").style.display = "none";
-
-    document.getElementById("recommended-section").scrollIntoView({
-        behavior:"smooth"
-    });
-
-}
+<script src="menu.js"></script>
 </body>
 </html>
-
