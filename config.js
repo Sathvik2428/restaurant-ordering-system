@@ -4,10 +4,10 @@
 // ==========================================
 
 const SUPABASE_URL =
-    sb_publishable_btHknkMsgvSk1hBgADI1yA_sZW9YL2Y;
+    "https://YOUR_PROJECT_ID.supabase.co";
 
 const SUPABASE_ANON_KEY =
-    "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+    "sb_publishable_btHknkMsgvSk1hBgADI1yA_sZW9YL2Y";
 
 
 // ==========================================
@@ -15,7 +15,7 @@ const SUPABASE_ANON_KEY =
 // ==========================================
 
 const HOTEL_UPI_ID =
-    "PASTE_HOTEL_UPI_ID_HERE";
+    "YOUR_HOTEL_UPI_ID@BANK";
 
 const HOTEL_UPI_NAME =
     "RAJATHADRI PALACE";
