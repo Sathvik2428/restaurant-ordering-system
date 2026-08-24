@@ -322,7 +322,9 @@ const categoryIcons = {
 // CART
 // ================================
 
-let cart = [];
+let cart = JSON.parse(
+    localStorage.getItem("rajathadri_cart") || "[]"
+);
 
 
 // ================================
@@ -583,7 +585,10 @@ function addToCart(category, name, price) {
 // ================================
 
 function updateCart() {
-
+    localStorage.setItem(
+        "rajathadri_cart",
+        JSON.stringify(cart)
+    );
     const count =
         cart.reduce(
             (sum, item) =>
