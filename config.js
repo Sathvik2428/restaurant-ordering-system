@@ -4,7 +4,7 @@
 // ==========================================
 
 const SUPABASE_URL =
-    "PASTE_YOUR_PROJECT_URL_HERE";
+    sb_publishable_btHknkMsgvSk1hBgADI1yA_sZW9YL2Y;
 
 const SUPABASE_ANON_KEY =
     "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
