@@ -795,3 +795,25 @@ document.addEventListener(
 
     }
 );
+// ================================
+// GO TO CHECKOUT
+// ================================
+
+function goToCheckout() {
+
+    if (cart.length === 0) {
+
+        alert("Your cart is empty.");
+
+        return;
+    }
+
+    localStorage.setItem(
+        "rajathadri_cart",
+        JSON.stringify(cart)
+    );
+
+    window.location.href =
+        "checkout.html?table=" +
+        encodeURIComponent(TABLE_NUMBER);
+}
