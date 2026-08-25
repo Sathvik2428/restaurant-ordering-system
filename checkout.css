@@ -883,3 +883,128 @@ body {
     font-size: 1.2rem;
     font-weight: 600;
 }
+/* ==========================================
+   CHECKOUT QUANTITY CONTROLS
+========================================== */
+
+.checkout-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+.checkout-item-info {
+    flex: 1;
+}
+
+.checkout-item-info h3 {
+    margin: 0 0 6px;
+    color: #f5f5f5;
+    font-size: 1.2rem;
+}
+
+.checkout-item-info p {
+    margin: 0;
+    color: #aaa;
+    font-size: 0.95rem;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.qty-btn {
+    width: 38px;
+    height: 38px;
+
+    border: 1px solid #d4af37;
+    border-radius: 50%;
+
+    background: transparent;
+    color: #d4af37;
+
+    font-size: 1.5rem;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: 0.2s;
+}
+
+.qty-btn:hover {
+    background: #d4af37;
+    color: #111;
+}
+
+.qty-number {
+    min-width: 25px;
+    text-align: center;
+
+    color: #f5f5f5;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.checkout-item-price {
+    min-width: 80px;
+
+    text-align: right;
+
+    color: #d4af37;
+
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.empty-checkout {
+    padding: 25px 0;
+    text-align: center;
+    color: #aaa;
+}
+
+.order-success-text {
+    color: #d4af37;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+
+    .checkout-item {
+        gap: 10px;
+    }
+
+    .checkout-item-info h3 {
+        font-size: 1rem;
+    }
+
+    .checkout-item-info p {
+        font-size: 0.8rem;
+    }
+
+    .qty-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 1.3rem;
+    }
+
+    .checkout-item-price {
+        min-width: 60px;
+        font-size: 1rem;
+    }
+
+}
