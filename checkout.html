@@ -1,644 +1,234 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>Checkout - Rajathadri Palace</title>
 
-    <title>
-        Checkout - Rajathadri Palace
-    </title>
+    <link rel="stylesheet" href="menu.css">
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
-        rel="stylesheet"
-    >
-
-    <style>
-
-        :root {
-
-            --gold: #d4af37;
-
-            --gold-light: #f3e5ab;
-
-            --bg: #080808;
-
-            --card: #151515;
-
-            --text: #ffffff;
-
-            --gray: #aaaaaa;
-
-        }
-
-
-        * {
-
-            box-sizing: border-box;
-
-            margin: 0;
-
-            padding: 0;
-
-        }
-
-
-        body {
-
-            min-height: 100vh;
-
-            background:
-
-                linear-gradient(
-                    rgba(0,0,0,.65),
-                    rgba(0,0,0,.9)
-                ),
-
-                url("images/1000203876.png");
-
-            background-size: cover;
-
-            background-position: center;
-
-            background-attachment: fixed;
-
-            color: var(--text);
-
-            font-family: 'Montserrat', sans-serif;
-
-            padding-bottom: 40px;
-
-        }
-
-
-        .header {
-
-            text-align: center;
-
-            padding: 25px 15px;
-
-            border-bottom: 1px solid
-                rgba(212,175,55,.4);
-
-        }
-
-
-        .logo {
-
-            font-family: 'Cinzel', serif;
-
-            color: var(--gold);
-
-            font-size: 1.7rem;
-
-            letter-spacing: 2px;
-
-        }
-
-
-        .subtitle {
-
-            color: var(--gold-light);
-
-            font-size: .7rem;
-
-            letter-spacing: 2px;
-
-            margin-top: 5px;
-
-        }
-
-
-        .container {
-
-            width: min(600px, 94%);
-
-            margin: 25px auto;
-
-        }
-
-
-        .table-box {
-
-            text-align: center;
-
-            border: 1px solid var(--gold);
-
-            border-radius: 12px;
-
-            padding: 15px;
-
-            margin-bottom: 20px;
-
-            background: rgba(0,0,0,.65);
-
-        }
-
-
-        .table-box p {
-
-            color: var(--gray);
-
-            font-size: .8rem;
-
-            margin-bottom: 5px;
-
-        }
-
-
-        .table-box h2 {
-
-            color: var(--gold);
-
-            font-family: 'Cinzel', serif;
-
-        }
-
-
-        .card {
-
-            background: rgba(21,21,21,.96);
-
-            border: 1px solid
-                rgba(212,175,55,.3);
-
-            border-radius: 14px;
-
-            padding: 20px;
-
-            margin-bottom: 18px;
-
-        }
-
-
-        .card h2 {
-
-            color: var(--gold);
-
-            font-family: 'Cinzel', serif;
-
-            margin-bottom: 18px;
-
-            font-size: 1.3rem;
-
-        }
-
-
-        .order-item {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            gap: 10px;
-
-            padding: 12px 0;
-
-            border-bottom:
-                1px solid rgba(255,255,255,.08);
-
-        }
-
-
-        .item-name {
-
-            font-weight: 500;
-
-        }
-
-
-        .item-details {
-
-            color: var(--gray);
-
-            font-size: .8rem;
-
-            margin-top: 4px;
-
-        }
-
-
-        .item-price {
-
-            color: var(--gold);
-
-            white-space: nowrap;
-
-        }
-
-
-        .total {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            padding-top: 18px;
-
-            margin-top: 5px;
-
-            border-top: 1px solid var(--gold);
-
-            font-size: 1.2rem;
-
-        }
-
-
-        .total strong:last-child {
-
-            color: var(--gold);
-
-        }
-
-
-        label {
-
-            display: block;
-
-            color: var(--gold-light);
-
-            font-size: .85rem;
-
-            margin-bottom: 7px;
-
-        }
-
-
-        input,
-
-        textarea {
-
-            width: 100%;
-
-            background: #0c0c0c;
-
-            color: white;
-
-            border: 1px solid #444;
-
-            border-radius: 8px;
-
-            padding: 13px;
-
-            margin-bottom: 16px;
-
-            font-family: inherit;
-
-            outline: none;
-
-        }
-
-
-        input:focus,
-
-        textarea:focus {
-
-            border-color: var(--gold);
-
-        }
-
-
-        textarea {
-
-            resize: vertical;
-
-            min-height: 80px;
-
-        }
-
-
-        .payment-option {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 12px;
-
-            border: 1px solid #444;
-
-            border-radius: 10px;
-
-            padding: 15px;
-
-            margin-bottom: 10px;
-
-            cursor: pointer;
-
-        }
-
-
-        .payment-option:has(input:checked) {
-
-            border-color: var(--gold);
-
-            background:
-                rgba(212,175,55,.08);
-
-        }
-
-
-        .payment-option input {
-
-            width: auto;
-
-            margin: 0;
-
-            accent-color: var(--gold);
-
-        }
-
-
-        .payment-title {
-
-            font-weight: 600;
-
-        }
-
-
-        .payment-description {
-
-            color: var(--gray);
-
-            font-size: .75rem;
-
-            margin-top: 3px;
-
-        }
-
-
-        .place-order {
-
-            width: 100%;
-
-            border: 2px solid var(--gold);
-
-            background: #651010;
-
-            color: white;
-
-            border-radius: 30px;
-
-            padding: 15px;
-
-            font-family: 'Cinzel', serif;
-
-            font-size: 1.05rem;
-
-            cursor: pointer;
-
-            margin-top: 5px;
-
-        }
-
-
-        .place-order:disabled {
-
-            opacity: .5;
-
-            cursor: not-allowed;
-
-        }
-
-
-        .back-button {
-
-            display: block;
-
-            text-align: center;
-
-            color: var(--gold);
-
-            text-decoration: none;
-
-            margin: 20px 0;
-
-            font-size: .85rem;
-
-        }
-
-
-        .error {
-
-            display: none;
-
-            background: #4a1010;
-
-            border: 1px solid #b33;
-
-            padding: 12px;
-
-            border-radius: 8px;
-
-            margin-bottom: 15px;
-
-            font-size: .85rem;
-
-        }
-
-    </style>
-
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
 </head>
-
 
 <body>
 
+    <!-- HEADER -->
 
-<header class="header">
+    <header class="top-header">
 
-    <div class="logo">
-        RAJATHADRI PALACE
-    </div>
+        <div class="logo-center">
 
-    <div class="subtitle">
-        TRADITION • TASTE • TRUST
-    </div>
+            <div class="logo-circle">
+                <span>R</span>
+            </div>
 
-</header>
+            <div class="logo-text">
 
+                <h1>RAJATHADRI PALACE</h1>
 
-<div class="container">
+                <p>
+                    TRADITION • TASTE • TRUST
+                </p>
 
-
-    <div class="table-box">
-
-        <p>
-            YOU ARE ORDERING FROM
-        </p>
-
-        <h2 id="tableNumber">
-            TABLE
-        </h2>
-
-    </div>
-
-
-    <div
-        id="errorMessage"
-        class="error"
-    ></div>
-
-
-    <section class="card">
-
-        <h2>
-            Your Order
-        </h2>
-
-        <div id="orderItems"></div>
-
-        <div class="total">
-
-            <strong>
-                TOTAL
-            </strong>
-
-            <strong id="orderTotal">
-                ₹0
-            </strong>
+            </div>
 
         </div>
 
-    </section>
+    </header>
 
 
-    <section class="card">
+    <!-- CHECKOUT -->
 
-        <h2>
-            Customer Details
-        </h2>
+    <main class="checkout-page">
 
+        <div class="checkout-container">
 
-        <label for="customerName">
-            Your Name
-        </label>
+            <div class="checkout-title">
 
-        <input
-            id="customerName"
-            type="text"
-            placeholder="Enter your name"
-            autocomplete="name"
-        >
+                <span>◆</span>
 
+                <h2>CONFIRM ORDER</h2>
 
-        <label for="customerPhone">
-            Mobile Number
-        </label>
-
-        <input
-            id="customerPhone"
-            type="tel"
-            placeholder="Enter mobile number"
-            inputmode="numeric"
-            maxlength="10"
-        >
-
-
-        <label for="notes">
-            Special Request
-        </label>
-
-        <textarea
-            id="notes"
-            placeholder="Less spicy, no onion, etc. (optional)"
-        ></textarea>
-
-    </section>
-
-
-    <section class="card">
-
-        <h2>
-            Payment
-        </h2>
-
-
-        <label class="payment-option">
-
-            <input
-                type="radio"
-                name="payment"
-                value="cash"
-                checked
-            >
-
-            <div>
-
-                <div class="payment-title">
-                    💵 Cash
-                </div>
-
-                <div class="payment-description">
-                    Pay at the restaurant
-                </div>
+                <span>◆</span>
 
             </div>
 
-        </label>
 
+            <!-- TABLE INFORMATION -->
 
-        <label class="payment-option">
+            <div class="table-info-card">
 
-            <input
-                type="radio"
-                name="payment"
-                value="upi"
-            >
+                <p>YOU ARE ORDERING FROM</p>
 
-            <div>
-
-                <div class="payment-title">
-                    📱 UPI
-                </div>
-
-                <div class="payment-description">
-                    Pay using your UPI app
-                </div>
+                <h3 id="tableNumber">
+                    TABLE -
+                </h3>
 
             </div>
 
-        </label>
 
-    </section>
+            <!-- ORDER -->
 
+            <section class="checkout-section">
 
-    <button
-        class="place-order"
-        id="placeOrderButton"
-        onclick="placeOrder()"
-    >
+                <h3>Your Order</h3>
 
-        PLACE ORDER
+                <div id="checkoutItems"></div>
 
-    </button>
+                <div class="checkout-total">
 
+                    <span>Total</span>
 
-    <a
-        href="#"
-        class="back-button"
-        onclick="goBackToMenu(); return false;"
-    >
-        ← Back to Menu
-    </a>
+                    <strong id="checkoutTotal">
+                        ₹0
+                    </strong>
+
+                </div>
+
+            </section>
 
 
-</div>
+            <!-- CUSTOMER DETAILS -->
+
+            <section class="checkout-section">
+
+                <h3>Customer Details</h3>
+
+                <div class="form-group">
+
+                    <label for="customerName">
+                        Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="customerName"
+                        placeholder="Enter your name"
+                        required
+                    >
+
+                </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+                <div class="form-group">
 
-<script src="config.js"></script>
+                    <label for="customerPhone">
+                        Mobile Number
+                    </label>
 
-<script src="checkout.js"></script>
+                    <input
+                        type="tel"
+                        id="customerPhone"
+                        placeholder="Enter mobile number"
+                        maxlength="10"
+                        required
+                    >
 
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="orderNotes">
+                        Special Request
+                    </label>
+
+                    <textarea
+                        id="orderNotes"
+                        placeholder="Any special request?"
+                        rows="3"
+                    ></textarea>
+
+                </div>
+
+            </section>
+
+
+            <!-- PAYMENT INFORMATION -->
+
+            <section class="payment-info">
+
+                <div class="payment-icon">
+                    🧾
+                </div>
+
+                <div>
+
+                    <h3>
+                        Pay at the end
+                    </h3>
+
+                    <p>
+                        You don't need to pay for this order now.
+                        You can order more food later and pay the
+                        complete table bill together.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- PLACE ORDER -->
+
+            <button
+                id="placeOrderBtn"
+                class="place-order-btn"
+                onclick="placeOrder()"
+            >
+                PLACE ORDER
+            </button>
+
+
+            <!-- MESSAGE -->
+
+            <div
+                id="checkoutMessage"
+                class="checkout-message"
+            ></div>
+
+
+            <!-- ORDER MORE -->
+
+            <button
+                id="orderMoreBtn"
+                class="order-more-btn"
+                onclick="orderMore()"
+                style="display:none;"
+            >
+                + ORDER MORE FOOD
+            </button>
+
+
+            <!-- FINAL BILL -->
+
+            <button
+                id="billBtn"
+                class="bill-btn"
+                onclick="requestBill()"
+                style="display:none;"
+            >
+                🧾 REQUEST FINAL BILL
+            </button>
+
+        </div>
+
+    </main>
+
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="config.js"></script>
+
+    <script src="checkout.js"></script>
 
 </body>
+
+</html>
 
 </html>
