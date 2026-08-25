@@ -1,11 +1,12 @@
 // ==========================================
 // RAJATHADRI PALACE
 // CHECKOUT SYSTEM
+// MULTIPLE ORDERS / ONE FINAL BILL
 // ==========================================
 
 
 // ==========================================
-// SUPABASE
+// SUPABASE CLIENT
 // ==========================================
 
 const supabaseClient =
@@ -16,81 +17,153 @@ const supabaseClient =
 
 
 // ==========================================
-// TABLE NUMBER
+// GET TABLE NUMBER
 // ==========================================
 
-const checkoutParams =
-    new URLSearchParams(
-        window.location.search
-    );
+const urlParams =
+    new URLSearchParams(window.location.search);
 
 const TABLE_NUMBER =
-    checkoutParams.get("table") || "Unknown";
+    urlParams.get("table") ||
+    localStorage.getItem("rajathadri_table") ||
+    "1";
+
+
+// Save table number
+
+localStorage.setItem(
+    "rajathadri_table",
+    TABLE_NUMBER
+);
 
 
 // ==========================================
 // CART
 // ==========================================
 
-let cart = JSON.parse(
+let cart =
+    JSON.parse(
+        localStorage.getItem("rajathadri_cart") || "[]"
+    );
+
+
+// ==========================================
+// CURRENT SESSION
+// ==========================================
+
+let currentSessionId =
     localStorage.getItem(
-        "rajathadri_cart"
-    ) || "[]"
+        "rajathadri_session_id"
+    );
+
+
+// ==========================================
+// DISPLAY TABLE
+// ==========================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const tableElement =
+            document.getElementById("tableNumber");
+
+        if (tableElement) {
+
+            tableElement.textContent =
+                "TABLE " + TABLE_NUMBER;
+
+        }
+
+        renderCheckout();
+
+    }
 );
 
 
 // ==========================================
-// DOM
+// RENDER CHECKOUT
 // ==========================================
 
-const tableNumberElement =
-    document.getElementById(
-        "tableNumber"
-    );
+function renderCheckout() {
 
-const orderItemsElement =
-    document.getElementById(
-        "orderItems"
-    );
+    const container =
+        document.getElementById("checkoutItems");
 
-const orderTotalElement =
-    document.getElementById(
-        "orderTotal"
-    );
+    const totalElement =
+        document.getElementById("checkoutTotal");
 
-const errorElement =
-    document.getElementById(
-        "errorMessage"
-    );
-
-const placeOrderButton =
-    document.getElementById(
-        "placeOrderButton"
-    );
+    if (!container || !totalElement) {
+        return;
+    }
 
 
-// ==========================================
-// SHOW TABLE
-// ==========================================
+    if (cart.length === 0) {
 
-tableNumberElement.textContent =
-    "TABLE " + TABLE_NUMBER;
+        container.innerHTML =
+            "<p>Your cart is empty.</p>";
+
+        totalElement.textContent =
+            "₹0";
+
+        return;
+    }
+
+
+    let total = 0;
+
+
+    container.innerHTML =
+        cart.map(function (item) {
+
+            const itemTotal =
+                item.price * item.qty;
+
+            total += itemTotal;
+
+            return `
+                <div class="checkout-item">
+
+                    <div>
+
+                        <strong>
+                            ${escapeHtml(item.name)}
+                        </strong>
+
+                        <p>
+                            ₹${item.price} × ${item.qty}
+                        </p>
+
+                    </div>
+
+                    <strong>
+                        ₹${itemTotal}
+                    </strong>
+
+                </div>
+            `;
+
+        }).join("");
+
+
+    totalElement.textContent =
+        "₹" + total;
+
+}
 
 
 // ==========================================
 // CALCULATE TOTAL
 // ==========================================
 
-function calculateTotal() {
+function getCartTotal() {
 
     return cart.reduce(
-        (total, item) => {
+        function (total, item) {
 
             return total +
-                (
-                    Number(item.price) *
-                    Number(item.qty)
-                );
+                (Number(item.price) *
+                 Number(item.qty));
 
         },
         0
@@ -100,161 +173,188 @@ function calculateTotal() {
 
 
 // ==========================================
-// DISPLAY CART
+// GET OR CREATE TABLE SESSION
 // ==========================================
 
-function renderOrder() {
+async function getOrCreateSession() {
 
-    if (cart.length === 0) {
+    // --------------------------------------
+    // If we already have a session
+    // --------------------------------------
 
-        orderItemsElement.innerHTML = `
-            <p style="color:#aaa;text-align:center;">
-                Your cart is empty.
-            </p>
-        `;
+    if (currentSessionId) {
 
-        placeOrderButton.disabled = true;
+        const {
+            data,
+            error
+        } = await supabaseClient
 
-        orderTotalElement.textContent =
-            "₹0";
+            .from("table_sessions")
 
-        return;
+            .select("id,status")
+
+            .eq("id", currentSessionId)
+
+            .maybeSingle();
+
+
+        if (!error && data) {
+
+            if (data.status === "active") {
+
+                return data.id;
+
+            }
+
+        }
+
+
+        // Old/closed session
+
+        currentSessionId = null;
+
+        localStorage.removeItem(
+            "rajathadri_session_id"
+        );
+
     }
 
 
-    orderItemsElement.innerHTML =
-        cart.map(item => `
+    // --------------------------------------
+    // Look for existing active session
+    // --------------------------------------
 
-            <div class="order-item">
+    const {
+        data: activeSession,
+        error: activeError
+    } = await supabaseClient
 
-                <div>
+        .from("table_sessions")
 
-                    <div class="item-name">
-                        ${escapeHTML(item.name)}
-                    </div>
+        .select("id,status")
 
-                    <div class="item-details">
-                        ${escapeHTML(item.category)}
-                        ×
-                        ${item.qty}
-                    </div>
+        .eq("table_no", TABLE_NUMBER)
 
-                </div>
+        .eq("status", "active")
 
-                <div class="item-price">
-                    ₹${Number(item.price) *
-                       Number(item.qty)}
-                </div>
+        .order("started_at", {
+            ascending: false
+        })
 
-            </div>
-
-        `).join("");
+        .limit(1)
+        .maybeSingle();
 
 
-    orderTotalElement.textContent =
-        "₹" + calculateTotal();
+    if (!activeError && activeSession) {
 
+        currentSessionId =
+            activeSession.id;
+
+        localStorage.setItem(
+            "rajathadri_session_id",
+            currentSessionId
+        );
+
+        return currentSessionId;
+
+    }
+
+
+    // --------------------------------------
+    // Create new session
+    // --------------------------------------
+
+    const {
+        data: newSession,
+        error: createError
+    } = await supabaseClient
+
+        .from("table_sessions")
+
+        .insert({
+
+            table_no: TABLE_NUMBER,
+
+            status: "active",
+
+            subtotal: 0,
+
+            tax: 0,
+
+            grand_total: 0,
+
+            payment_status: "pending"
+
+        })
+
+        .select("id")
+        .single();
+
+
+    if (createError) {
+
+        console.error(
+            "Session creation error:",
+            createError
+        );
+
+        throw new Error(
+            createError.message
+        );
+
+    }
+
+
+    currentSessionId =
+        newSession.id;
+
+
+    localStorage.setItem(
+        "rajathadri_session_id",
+        currentSessionId
+    );
+
+
+    return currentSessionId;
 }
 
 
 // ==========================================
-// ESCAPE HTML
-// ==========================================
-
-function escapeHTML(value) {
-
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-
-// ==========================================
-// ERROR
-// ==========================================
-
-function showError(message) {
-
-    errorElement.textContent =
-        message;
-
-    errorElement.style.display =
-        "block";
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
-}
-
-
-// ==========================================
-// VALIDATE PHONE
-// ==========================================
-
-function validPhone(phone) {
-
-    return /^[6-9]\d{9}$/.test(phone);
-
-}
-
-
-// ==========================================
-// CREATE ORDER NUMBER
+// GENERATE ORDER NUMBER
 // ==========================================
 
 function generateOrderNumber() {
 
-    const now = new Date();
-
-    const year =
-        now.getFullYear();
-
-    const month =
-        String(
-            now.getMonth() + 1
-        ).padStart(2, "0");
-
-    const day =
-        String(
-            now.getDate()
-        ).padStart(2, "0");
+    const timestamp =
+        Date.now();
 
     const random =
         Math.floor(
-            1000 + Math.random() * 9000
+            100 + Math.random() * 900
         );
 
-    return `RP-${year}${month}${day}-${random}`;
+    return (
+        "RP-" +
+        timestamp +
+        "-" +
+        random
+    );
 
 }
 
 
 // ==========================================
-// CREATE ORDER TOKEN
+// GENERATE ORDER TOKEN
 // ==========================================
 
 function generateOrderToken() {
 
-    if (
-        window.crypto &&
-        crypto.randomUUID
-    ) {
-
-        return crypto.randomUUID();
-
-    }
-
     return (
         Date.now().toString(36) +
+        "-" +
         Math.random()
             .toString(36)
-            .substring(2)
+            .substring(2, 10)
     );
 
 }
@@ -266,174 +366,166 @@ function generateOrderToken() {
 
 async function placeOrder() {
 
-    errorElement.style.display =
-        "none";
+    const button =
+        document.getElementById(
+            "placeOrderBtn"
+        );
 
 
-    // -----------------------------
-    // CART CHECK
-    // -----------------------------
+    const message =
+        document.getElementById(
+            "checkoutMessage"
+        );
+
+
+    const customerName =
+        document.getElementById(
+            "customerName"
+        ).value.trim();
+
+
+    const customerPhone =
+        document.getElementById(
+            "customerPhone"
+        ).value.trim();
+
+
+    const notes =
+        document.getElementById(
+            "orderNotes"
+        ).value.trim();
+
+
+    // --------------------------------------
+    // Validation
+    // --------------------------------------
 
     if (cart.length === 0) {
 
-        showError(
-            "Your cart is empty."
+        showMessage(
+            "Your cart is empty.",
+            "error"
         );
 
         return;
-
     }
 
 
-    // -----------------------------
-    // CUSTOMER DETAILS
-    // -----------------------------
+    if (!customerName) {
 
-    const customerName =
-        document
-            .getElementById("customerName")
-            .value
-            .trim();
-
-    const customerPhone =
-        document
-            .getElementById("customerPhone")
-            .value
-            .trim();
-
-    const notes =
-        document
-            .getElementById("notes")
-            .value
-            .trim();
-
-
-    // -----------------------------
-    // PAYMENT
-    // -----------------------------
-
-    const paymentElement =
-        document.querySelector(
-            'input[name="payment"]:checked'
-        );
-
-
-    const paymentMethod =
-        paymentElement
-            ? paymentElement.value
-            : "cash";
-
-
-    // -----------------------------
-    // VALIDATION
-    // -----------------------------
-
-    if (customerName.length < 2) {
-
-        showError(
-            "Please enter your name."
+        showMessage(
+            "Please enter your name.",
+            "error"
         );
 
         return;
-
     }
 
 
-    if (!validPhone(customerPhone)) {
+    if (!/^[0-9]{10}$/.test(customerPhone)) {
 
-        showError(
-            "Please enter a valid 10-digit Indian mobile number."
+        showMessage(
+            "Please enter a valid 10-digit mobile number.",
+            "error"
         );
 
         return;
-
     }
 
 
-    // -----------------------------
-    // DISABLE BUTTON
-    // -----------------------------
+    // --------------------------------------
+    // Disable button
+    // --------------------------------------
 
-    placeOrderButton.disabled =
-        true;
+    button.disabled = true;
 
-    placeOrderButton.textContent =
+    button.textContent =
         "PLACING ORDER...";
-
-
-    // -----------------------------
-    // ORDER DATA
-    // -----------------------------
-
-    const orderNumber =
-        generateOrderNumber();
-
-    const orderToken =
-        generateOrderToken();
-
-    const total =
-        calculateTotal();
-
-
-    const orderData = {
-
-        order_number:
-            orderNumber,
-
-        order_token:
-            orderToken,
-
-        table_no:
-            TABLE_NUMBER,
-
-        customer_name:
-            customerName,
-
-        customer_phone:
-            customerPhone,
-
-        items:
-            cart,
-
-        total:
-            total,
-
-        payment_method:
-            paymentMethod,
-
-        payment_status:
-            "pending",
-
-        order_status:
-            "new",
-
-        notes:
-            notes || null
-
-    };
 
 
     try {
 
-        // -------------------------
-        // SEND TO SUPABASE
-        // -------------------------
+        // ----------------------------------
+        // Get/Create table session
+        // ----------------------------------
+
+        const sessionId =
+            await getOrCreateSession();
+
+
+        // ----------------------------------
+        // Calculate total
+        // ----------------------------------
+
+        const total =
+            getCartTotal();
+
+
+        // ----------------------------------
+        // Create order
+        // ----------------------------------
+
+        const orderData = {
+
+            order_number:
+                generateOrderNumber(),
+
+            order_token:
+                generateOrderToken(),
+
+            table_no:
+                TABLE_NUMBER,
+
+            session_id:
+                sessionId,
+
+            customer_name:
+                customerName,
+
+            customer_phone:
+                customerPhone,
+
+            items:
+                cart,
+
+            total:
+                total,
+
+            // Payment happens at the end.
+            payment_method:
+                null,
+
+            payment_status:
+                "pending",
+
+            order_status:
+                "new",
+
+            notes:
+                notes || null
+
+        };
+
 
         const {
             data,
             error
-        } =
-            await supabaseClient
-                .from("orders")
-                .insert(orderData)
-                .select()
-                .single();
+        } = await supabaseClient
+
+            .from("orders")
+
+            .insert(orderData)
+
+            .select(
+                "order_number,order_token"
+            )
+            .single();
 
 
         if (error) {
 
             console.error(
-                "Supabase error:",
+                "Order error:",
                 error
             );
 
@@ -444,9 +536,9 @@ async function placeOrder() {
         }
 
 
-        // -------------------------
-        // SAVE CUSTOMER ORDER
-        // -------------------------
+        // ----------------------------------
+        // Save last order
+        // ----------------------------------
 
         localStorage.setItem(
             "rajathadri_last_order",
@@ -454,81 +546,64 @@ async function placeOrder() {
         );
 
 
-        // -------------------------
-        // CLEAR CART
-        // -------------------------
+        // ----------------------------------
+        // Clear cart
+        // ----------------------------------
 
-        localStorage.removeItem(
-            "rajathadri_cart"
+        cart = [];
+
+        localStorage.setItem(
+            "rajathadri_cart",
+            JSON.stringify([])
         );
 
 
-        // -------------------------
-        // UPI
-        // -------------------------
+        // ----------------------------------
+        // Success
+        // ----------------------------------
 
-        if (
-            paymentMethod === "upi"
-        ) {
+        showMessage(
 
-            const upiURL =
-                "upi://pay" +
-                "?pa=" +
-                encodeURIComponent(
-                    HOTEL_UPI_ID
-                ) +
-                "&pn=" +
-                encodeURIComponent(
-                    HOTEL_UPI_NAME
-                ) +
-                "&am=" +
-                encodeURIComponent(
-                    total.toFixed(2)
-                ) +
-                "&cu=INR" +
-                "&tn=" +
-                encodeURIComponent(
-                    orderNumber
-                );
+            "Order placed successfully! " +
+            "Order number: " +
+            data.order_number,
+
+            "success"
+
+        );
 
 
-            // Try opening UPI app
-
-            window.location.href =
-                upiURL;
+        button.style.display =
+            "none";
 
 
-            // After returning from UPI,
-            // customer can check order.
+        document.getElementById(
+            "orderMoreBtn"
+        ).style.display =
+            "block";
 
-            setTimeout(
-                function () {
 
-                    window.location.href =
-                        "order.html?token=" +
-                        encodeURIComponent(
-                            orderToken
-                        );
+        document.getElementById(
+            "billBtn"
+        ).style.display =
+            "block";
 
-                },
-                2500
-            );
 
-        }
+        // ----------------------------------
+        // Update display
+        // ----------------------------------
 
-        else {
+        document.getElementById(
+            "checkoutItems"
+        ).innerHTML =
 
-            // -------------------------
-            // CASH
-            // -------------------------
+            "<p>Your order has been sent to the hotel.</p>";
 
-            window.location.href =
-                "order.html?token=" +
-                encodeURIComponent(
-                    orderToken
-                );
 
-        }
+        document.getElementById(
+            "checkoutTotal"
+        ).textContent =
+            "₹0";
 
 
     }
@@ -537,15 +612,18 @@ async function placeOrder() {
 
         console.error(error);
 
-        showError(
-            "Unable to place your order. " +
-            "Please check your internet connection and try again."
+        showMessage(
+
+            "Unable to place your order: " +
+            error.message,
+
+            "error"
+
         );
 
-        placeOrderButton.disabled =
-            false;
+        button.disabled = false;
 
-        placeOrderButton.textContent =
+        button.textContent =
             "PLACE ORDER";
 
     }
@@ -554,10 +632,10 @@ async function placeOrder() {
 
 
 // ==========================================
-// BACK TO MENU
+// ORDER MORE FOOD
 // ==========================================
 
-function goBackToMenu() {
+function orderMore() {
 
     window.location.href =
         "menu.html?table=" +
@@ -569,14 +647,126 @@ function goBackToMenu() {
 
 
 // ==========================================
-// START
+// REQUEST FINAL BILL
 // ==========================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+async function requestBill() {
 
-        renderOrder();
+    if (!currentSessionId) {
 
+        showMessage(
+            "No active table session found.",
+            "error"
+        );
+
+        return;
     }
-);
+
+
+    const {
+        error
+    } = await supabaseClient
+
+        .from("table_sessions")
+
+        .update({
+
+            status:
+                "bill_requested"
+
+        })
+
+        .eq(
+            "id",
+            currentSessionId
+        );
+
+
+    if (error) {
+
+        console.error(
+            error
+        );
+
+        showMessage(
+            "Unable to request bill: " +
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+
+    showMessage(
+
+        "Final bill requested. " +
+        "Please wait for the hotel to generate your bill.",
+
+        "success"
+
+    );
+
+}
+
+
+// ==========================================
+// MESSAGE
+// ==========================================
+
+function showMessage(
+    text,
+    type
+) {
+
+    const message =
+        document.getElementById(
+            "checkoutMessage"
+        );
+
+
+    message.textContent =
+        text;
+
+
+    message.className =
+        "checkout-message " +
+        type;
+
+}
+
+
+// ==========================================
+// HTML ESCAPE
+// ==========================================
+
+function escapeHtml(value) {
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
