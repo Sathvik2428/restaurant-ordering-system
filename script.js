@@ -5,12 +5,20 @@
 // TABLE NUMBER
 // ==========================================
 
-const urlParams = new URLSearchParams(
-    window.location.search
-);
+const urlParams =
+    new URLSearchParams(
+        window.location.search
+    );
 
 const TABLE_NUMBER =
-    urlParams.get("table") || "Unknown";
+    urlParams.get("table") ||
+    localStorage.getItem("rajathadri_table") ||
+    "1";
+
+localStorage.setItem(
+    "rajathadri_table",
+    TABLE_NUMBER
+);
 const MENU = {
     "Hot Beverages": [
         { name: "Coffee / Tea", price: 35 },
