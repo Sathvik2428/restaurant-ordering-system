@@ -48,7 +48,7 @@ let cart =
 
 
 // ==========================================
-// CURRENT SESSION
+// CURRENT TABLE SESSION
 // ==========================================
 
 let currentSessionId =
@@ -58,12 +58,14 @@ let currentSessionId =
 
 
 // ==========================================
-// DISPLAY TABLE
+// PAGE START
 // ==========================================
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
+
+        // Show table number
 
         const tableElement =
             document.getElementById("tableNumber");
@@ -75,6 +77,9 @@ document.addEventListener(
 
         }
 
+
+        // Display cart
+
         renderCheckout();
 
     }
@@ -82,90 +87,182 @@ document.addEventListener(
 
 
 // ==========================================
-// RENDER CHECKOUT
+// RENDER COMPLETE CHECKOUT
+// ==========================================
+
+function renderCheckout() {
+
+    renderCheckoutItems();
+
+    updateCheckoutTotal();
+
+}
+
+
+// ==========================================
+// RENDER CHECKOUT ITEMS
 // ==========================================
 
 function renderCheckoutItems() {
 
-    const container = document.getElementById("checkoutItems");
+    const container =
+        document.getElementById("checkoutItems");
 
     if (!container) return;
 
-    container.innerHTML = "";
 
-    cart.forEach((item, index) => {
+    // Empty cart
 
-        const itemTotal = item.price * item.qty;
+    if (cart.length === 0) {
 
-        const itemDiv = document.createElement("div");
-
-        itemDiv.className = "checkout-item";
-
-        itemDiv.innerHTML = `
-            <div class="checkout-item-info">
-
-                <h3>${item.name}</h3>
-
-                <p>₹${item.price} × ${item.qty}</p>
-
-            </div>
-
-            <div class="quantity-control">
-
-                <button
-                    class="qty-btn"
-                    onclick="changeCheckoutQty(${index}, -1)">
-                    −
-                </button>
-
-                <span class="qty-number">
-                    ${item.qty}
-                </span>
-
-                <button
-                    class="qty-btn"
-                    onclick="changeCheckoutQty(${index}, 1)">
-                    +
-                </button>
-
-            </div>
-
-            <div class="checkout-item-price">
-                ₹${itemTotal}
-            </div>
+        container.innerHTML = `
+            <p class="empty-checkout">
+                Your cart is empty.
+            </p>
         `;
 
-        container.appendChild(itemDiv);
+        updateCheckoutTotal();
 
-    });
-
-    updateCheckoutTotal();
-}
-
-function changeCheckoutQty(index, change) {
-
-    if (!cart[index]) return;
-
-    cart[index].qty += change;
-
-    // Remove item if quantity becomes 0
-    if (cart[index].qty <= 0) {
-
-        cart.splice(index, 1);
+        return;
 
     }
 
-    // Save updated cart
+
+    container.innerHTML = "";
+
+
+    cart.forEach(
+        function (item, index) {
+
+            const price =
+                Number(item.price);
+
+            const quantity =
+                Number(item.qty);
+
+            const itemTotal =
+                price * quantity;
+
+
+            const itemDiv =
+                document.createElement("div");
+
+            itemDiv.className =
+                "checkout-item";
+
+
+            itemDiv.innerHTML = `
+
+                <div class="checkout-item-info">
+
+                    <h3>
+                        ${escapeHtml(item.name)}
+                    </h3>
+
+                    <p>
+                        ₹${price} × ${quantity}
+                    </p>
+
+                </div>
+
+
+                <div class="quantity-control">
+
+                    <button
+                        type="button"
+                        class="qty-btn"
+                        onclick="changeCheckoutQty(${index}, -1)"
+                    >
+                        −
+                    </button>
+
+
+                    <span class="qty-number">
+                        ${quantity}
+                    </span>
+
+
+                    <button
+                        type="button"
+                        class="qty-btn"
+                        onclick="changeCheckoutQty(${index}, 1)"
+                    >
+                        +
+                    </button>
+
+                </div>
+
+
+                <div class="checkout-item-price">
+
+                    ₹${itemTotal}
+
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                itemDiv
+            );
+
+        }
+    );
+
+
+    updateCheckoutTotal();
+
+}
+
+
+// ==========================================
+// CHANGE QUANTITY
+// ==========================================
+
+function changeCheckoutQty(
+    index,
+    change
+) {
+
+    if (!cart[index]) return;
+
+
+    cart[index].qty =
+        Number(cart[index].qty) +
+        Number(change);
+
+
+    // Remove item when quantity reaches zero
+
+    if (cart[index].qty <= 0) {
+
+        cart.splice(
+            index,
+            1
+        );
+
+    }
+
+
+    // IMPORTANT:
+    // Use the same localStorage key
+    // used by menu/script.js
+
     localStorage.setItem(
-        "cart",
+        "rajathadri_cart",
         JSON.stringify(cart)
     );
 
-    renderCheckoutItems();
+
+    // Refresh checkout
+
+    renderCheckout();
 
 }
+
+
 // ==========================================
-// CALCULATE TOTAL
+// CALCULATE CART TOTAL
 // ==========================================
 
 function getCartTotal() {
@@ -174,12 +271,40 @@ function getCartTotal() {
         function (total, item) {
 
             return total +
-                (Number(item.price) *
-                 Number(item.qty));
+                (
+                    Number(item.price) *
+                    Number(item.qty)
+                );
 
         },
         0
     );
+
+}
+
+
+// ==========================================
+// UPDATE CHECKOUT TOTAL
+// ==========================================
+
+function updateCheckoutTotal() {
+
+    const total =
+        getCartTotal();
+
+
+    const totalElement =
+        document.getElementById(
+            "checkoutTotal"
+        );
+
+
+    if (totalElement) {
+
+        totalElement.textContent =
+            "₹" + total;
+
+    }
 
 }
 
@@ -190,8 +315,9 @@ function getCartTotal() {
 
 async function getOrCreateSession() {
 
+
     // --------------------------------------
-    // If we already have a session
+    // Check saved session
     // --------------------------------------
 
     if (currentSessionId) {
@@ -205,18 +331,21 @@ async function getOrCreateSession() {
 
             .select("id,status")
 
-            .eq("id", currentSessionId)
+            .eq(
+                "id",
+                currentSessionId
+            )
 
             .maybeSingle();
 
 
-        if (!error && data) {
+        if (
+            !error &&
+            data &&
+            data.status === "active"
+        ) {
 
-            if (data.status === "active") {
-
-                return data.id;
-
-            }
+            return data.id;
 
         }
 
@@ -233,7 +362,7 @@ async function getOrCreateSession() {
 
 
     // --------------------------------------
-    // Look for existing active session
+    // Find existing active session
     // --------------------------------------
 
     const {
@@ -245,27 +374,42 @@ async function getOrCreateSession() {
 
         .select("id,status")
 
-        .eq("table_no", TABLE_NUMBER)
+        .eq(
+            "table_no",
+            TABLE_NUMBER
+        )
 
-        .eq("status", "active")
+        .eq(
+            "status",
+            "active"
+        )
 
-        .order("started_at", {
-            ascending: false
-        })
+        .order(
+            "started_at",
+            {
+                ascending: false
+            }
+        )
 
         .limit(1)
+
         .maybeSingle();
 
 
-    if (!activeError && activeSession) {
+    if (
+        !activeError &&
+        activeSession
+    ) {
 
         currentSessionId =
             activeSession.id;
+
 
         localStorage.setItem(
             "rajathadri_session_id",
             currentSessionId
         );
+
 
         return currentSessionId;
 
@@ -285,28 +429,35 @@ async function getOrCreateSession() {
 
         .insert({
 
-            table_no: TABLE_NUMBER,
+            table_no:
+                TABLE_NUMBER,
 
-            status: "active",
+            status:
+                "active",
 
-            subtotal: 0,
+            subtotal:
+                0,
 
-            tax: 0,
+            tax:
+                0,
 
-            grand_total: 0,
+            grand_total:
+                0,
 
-            payment_status: "pending"
+            payment_status:
+                "pending"
 
         })
 
         .select("id")
+
         .single();
 
 
     if (createError) {
 
         console.error(
-            "Session creation error:",
+            "SESSION CREATION ERROR:",
             createError
         );
 
@@ -328,6 +479,7 @@ async function getOrCreateSession() {
 
 
     return currentSessionId;
+
 }
 
 
@@ -342,8 +494,10 @@ function generateOrderNumber() {
 
     const random =
         Math.floor(
-            100 + Math.random() * 900
+            100 +
+            Math.random() * 900
         );
+
 
     return (
         "RP-" +
@@ -384,12 +538,6 @@ async function placeOrder() {
         );
 
 
-    const message =
-        document.getElementById(
-            "checkoutMessage"
-        );
-
-
     const customerName =
         document.getElementById(
             "customerName"
@@ -409,7 +557,7 @@ async function placeOrder() {
 
 
     // --------------------------------------
-    // Validation
+    // VALIDATION
     // --------------------------------------
 
     if (cart.length === 0) {
@@ -420,6 +568,7 @@ async function placeOrder() {
         );
 
         return;
+
     }
 
 
@@ -431,10 +580,15 @@ async function placeOrder() {
         );
 
         return;
+
     }
 
 
-    if (!/^[0-9]{10}$/.test(customerPhone)) {
+    if (
+        !/^[0-9]{10}$/.test(
+            customerPhone
+        )
+    ) {
 
         showMessage(
             "Please enter a valid 10-digit mobile number.",
@@ -442,6 +596,7 @@ async function placeOrder() {
         );
 
         return;
+
     }
 
 
@@ -458,7 +613,7 @@ async function placeOrder() {
     try {
 
         // ----------------------------------
-        // Get/Create table session
+        // Get/Create session
         // ----------------------------------
 
         const sessionId =
@@ -503,7 +658,8 @@ async function placeOrder() {
             total:
                 total,
 
-            // Payment happens at the end.
+            // Payment happens at the end
+
             payment_method:
                 null,
 
@@ -519,6 +675,16 @@ async function placeOrder() {
         };
 
 
+        console.log(
+            "ORDER DATA:",
+            orderData
+        );
+
+
+        // ----------------------------------
+        // Insert order into Supabase
+        // ----------------------------------
+
         const {
             data,
             error
@@ -531,13 +697,14 @@ async function placeOrder() {
             .select(
                 "order_number,order_token"
             )
+
             .single();
 
 
         if (error) {
 
             console.error(
-                "Order error:",
+                "ORDER INSERT ERROR:",
                 error
             );
 
@@ -546,6 +713,15 @@ async function placeOrder() {
             );
 
         }
+
+
+        // ----------------------------------
+        // Update table session totals
+        // ----------------------------------
+
+        await updateSessionTotal(
+            sessionId
+        );
 
 
         // ----------------------------------
@@ -563,6 +739,7 @@ async function placeOrder() {
         // ----------------------------------
 
         cart = [];
+
 
         localStorage.setItem(
             "rajathadri_cart",
@@ -585,31 +762,63 @@ async function placeOrder() {
         );
 
 
+        // Hide place order
+
         button.style.display =
             "none";
 
 
-        document.getElementById(
-            "orderMoreBtn"
-        ).style.display =
-            "block";
+        // Show order more
+
+        const orderMoreButton =
+            document.getElementById(
+                "orderMoreBtn"
+            );
+
+        if (orderMoreButton) {
+
+            orderMoreButton.style.display =
+                "block";
+
+        }
 
 
-        document.getElementById(
-            "billBtn"
-        ).style.display =
-            "block";
+        // Show final bill
+
+        const billButton =
+            document.getElementById(
+                "billBtn"
+            );
+
+        if (billButton) {
+
+            billButton.style.display =
+                "block";
+
+        }
 
 
-        // ----------------------------------
-        // Update display
-        // ----------------------------------
+        // Clear displayed items
 
         document.getElementById(
             "checkoutItems"
-        ).innerHTML =
+        ).innerHTML = `
 
-            "<p>Your order has been sent to the hotel.</p>";
+            <p class="order-success-text">
+
+                ✓ Your order has been sent
+                to the hotel.
+
+            </p>
+
+            <p>
+
+                You can order more food
+                whenever you want.
+
+            </p>
+
+        `;
 
 
         document.getElementById(
@@ -622,7 +831,11 @@ async function placeOrder() {
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            "FULL CHECKOUT ERROR:",
+            error
+        );
+
 
         showMessage(
 
@@ -633,10 +846,110 @@ async function placeOrder() {
 
         );
 
-        button.disabled = false;
+
+        button.disabled =
+            false;
+
 
         button.textContent =
             "PLACE ORDER";
+
+    }
+
+}
+
+
+// ==========================================
+// UPDATE SESSION TOTAL
+// ==========================================
+
+async function updateSessionTotal(
+    sessionId
+) {
+
+    try {
+
+        const {
+            data: orders,
+            error
+        } = await supabaseClient
+
+            .from("orders")
+
+            .select("total")
+
+            .eq(
+                "session_id",
+                sessionId
+            )
+
+            .neq(
+                "order_status",
+                "cancelled"
+            );
+
+
+        if (error) {
+
+            console.error(
+                "SESSION TOTAL ERROR:",
+                error
+            );
+
+            return;
+
+        }
+
+
+        let subtotal = 0;
+
+
+        orders.forEach(
+            function (order) {
+
+                subtotal +=
+                    Number(order.total);
+
+            }
+        );
+
+
+        const tax = 0;
+
+        const grandTotal =
+            subtotal + tax;
+
+
+        await supabaseClient
+
+            .from("table_sessions")
+
+            .update({
+
+                subtotal:
+                    subtotal,
+
+                tax:
+                    tax,
+
+                grand_total:
+                    grandTotal
+
+            })
+
+            .eq(
+                "id",
+                sessionId
+            );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "UPDATE SESSION ERROR:",
+            error
+        );
 
     }
 
@@ -672,6 +985,7 @@ async function requestBill() {
         );
 
         return;
+
     }
 
 
@@ -697,16 +1011,22 @@ async function requestBill() {
     if (error) {
 
         console.error(
+            "BILL REQUEST ERROR:",
             error
         );
 
+
         showMessage(
+
             "Unable to request bill: " +
             error.message,
+
             "error"
+
         );
 
         return;
+
     }
 
 
@@ -723,7 +1043,7 @@ async function requestBill() {
 
 
 // ==========================================
-// MESSAGE
+// SHOW MESSAGE
 // ==========================================
 
 function showMessage(
@@ -735,6 +1055,9 @@ function showMessage(
         document.getElementById(
             "checkoutMessage"
         );
+
+
+    if (!message) return;
 
 
     message.textContent =
@@ -752,7 +1075,9 @@ function showMessage(
 // HTML ESCAPE
 // ==========================================
 
-function escapeHtml(value) {
+function escapeHtml(
+    value
+) {
 
     return String(value)
 
