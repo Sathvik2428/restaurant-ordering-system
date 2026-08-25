@@ -85,73 +85,85 @@ document.addEventListener(
 // RENDER CHECKOUT
 // ==========================================
 
-function renderCheckout() {
+function renderCheckoutItems() {
 
-    const container =
-        document.getElementById("checkoutItems");
+    const container = document.getElementById("checkoutItems");
 
-    const totalElement =
-        document.getElementById("checkoutTotal");
+    if (!container) return;
 
-    if (!container || !totalElement) {
-        return;
-    }
+    container.innerHTML = "";
 
+    cart.forEach((item, index) => {
 
-    if (cart.length === 0) {
+        const itemTotal = item.price * item.qty;
 
-        container.innerHTML =
-            "<p>Your cart is empty.</p>";
+        const itemDiv = document.createElement("div");
 
-        totalElement.textContent =
-            "₹0";
+        itemDiv.className = "checkout-item";
 
-        return;
-    }
+        itemDiv.innerHTML = `
+            <div class="checkout-item-info">
 
+                <h3>${item.name}</h3>
 
-    let total = 0;
+                <p>₹${item.price} × ${item.qty}</p>
 
+            </div>
 
-    container.innerHTML =
-        cart.map(function (item) {
+            <div class="quantity-control">
 
-            const itemTotal =
-                item.price * item.qty;
+                <button
+                    class="qty-btn"
+                    onclick="changeCheckoutQty(${index}, -1)">
+                    −
+                </button>
 
-            total += itemTotal;
+                <span class="qty-number">
+                    ${item.qty}
+                </span>
 
-            return `
-                <div class="checkout-item">
+                <button
+                    class="qty-btn"
+                    onclick="changeCheckoutQty(${index}, 1)">
+                    +
+                </button>
 
-                    <div>
+            </div>
 
-                        <strong>
-                            ${escapeHtml(item.name)}
-                        </strong>
+            <div class="checkout-item-price">
+                ₹${itemTotal}
+            </div>
+        `;
 
-                        <p>
-                            ₹${item.price} × ${item.qty}
-                        </p>
+        container.appendChild(itemDiv);
 
-                    </div>
+    });
 
-                    <strong>
-                        ₹${itemTotal}
-                    </strong>
-
-                </div>
-            `;
-
-        }).join("");
-
-
-    totalElement.textContent =
-        "₹" + total;
-
+    updateCheckoutTotal();
 }
 
+function changeCheckoutQty(index, change) {
 
+    if (!cart[index]) return;
+
+    cart[index].qty += change;
+
+    // Remove item if quantity becomes 0
+    if (cart[index].qty <= 0) {
+
+        cart.splice(index, 1);
+
+    }
+
+    // Save updated cart
+    localStorage.setItem(
+        "cart",
+        JSON.stringify(cart)
+    );
+
+    renderCheckoutItems();
+
+}
 // ==========================================
 // CALCULATE TOTAL
 // ==========================================
