@@ -1,0 +1,823 @@
+/* ==========================================
+   RAJATHADRI PALACE
+   CHECKOUT PAGE
+========================================== */
+
+:root {
+    --gold: #d4af37;
+    --gold-light: #f9e596;
+    --gold-dark: #997a00;
+    --red: #6e1010;
+    --red-light: #8a1414;
+    --dark: #160707;
+    --black: #080808;
+    --white: #f5f5f5;
+    --muted: #c9c9c9;
+
+    --heading: 'Cinzel', serif;
+    --body: 'Montserrat', sans-serif;
+}
+
+
+/* ==========================================
+   RESET
+========================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+
+body {
+
+    font-family: var(--body);
+
+    color: var(--white);
+
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.78),
+            rgba(0, 0, 0, 0.88)
+        ),
+        url("images/1000203876.png");
+
+    background-size: cover;
+
+    background-position: center;
+
+    background-attachment: fixed;
+
+    background-repeat: no-repeat;
+
+    padding-bottom: 50px;
+}
+
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.top-header {
+
+    width: 100%;
+
+    padding: 18px 25px;
+
+    background:
+        rgba(0, 0, 0, 0.92);
+
+    border-bottom:
+        1px solid rgba(212, 175, 55, 0.5);
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    position: relative;
+
+    z-index: 10;
+}
+
+
+.logo-center {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    text-align: left;
+}
+
+
+.logo-circle {
+
+    width: 52px;
+
+    height: 52px;
+
+    border:
+        2px solid var(--gold);
+
+    border-radius: 50%;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    background:
+        rgba(212, 175, 55, 0.08);
+}
+
+
+.logo-circle span {
+
+    font-family: var(--heading);
+
+    font-size: 25px;
+
+    color: var(--gold);
+
+    font-weight: 700;
+}
+
+
+.logo-text h1 {
+
+    font-family: var(--heading);
+
+    font-size: 18px;
+
+    letter-spacing: 2px;
+
+    color: var(--gold-light);
+}
+
+
+.logo-text p {
+
+    font-size: 8px;
+
+    letter-spacing: 3px;
+
+    color: var(--gold);
+
+    margin-top: 4px;
+}
+
+
+/* ==========================================
+   MAIN CHECKOUT
+========================================== */
+
+.checkout-page {
+
+    width: 100%;
+
+    min-height: calc(100vh - 90px);
+
+    padding: 35px 15px 70px;
+
+    display: flex;
+
+    justify-content: center;
+}
+
+
+.checkout-container {
+
+    width: 100%;
+
+    max-width: 650px;
+
+    background:
+        rgba(8, 8, 8, 0.88);
+
+    border:
+        1px solid rgba(212, 175, 55, 0.45);
+
+    border-radius: 18px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 15px 50px rgba(0, 0, 0, 0.75);
+}
+
+
+/* ==========================================
+   TITLE
+========================================== */
+
+.checkout-title {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 18px;
+
+    margin-bottom: 25px;
+}
+
+
+.checkout-title span {
+
+    color: var(--gold);
+
+    font-size: 15px;
+}
+
+
+.checkout-title h2 {
+
+    font-family: var(--heading);
+
+    font-size: 25px;
+
+    letter-spacing: 2px;
+
+    color: var(--gold-light);
+
+    text-align: center;
+}
+
+
+/* ==========================================
+   TABLE INFORMATION
+========================================== */
+
+.table-info-card {
+
+    text-align: center;
+
+    padding: 18px;
+
+    margin-bottom: 25px;
+
+    border:
+        1px solid rgba(212, 175, 55, 0.4);
+
+    border-radius: 12px;
+
+    background:
+        rgba(110, 16, 16, 0.35);
+}
+
+
+.table-info-card p {
+
+    font-size: 11px;
+
+    letter-spacing: 3px;
+
+    color: var(--muted);
+
+    margin-bottom: 8px;
+}
+
+
+.table-info-card h3 {
+
+    font-family: var(--heading);
+
+    color: var(--gold);
+
+    font-size: 25px;
+
+    letter-spacing: 3px;
+}
+
+
+/* ==========================================
+   SECTIONS
+========================================== */
+
+.checkout-section {
+
+    margin-bottom: 22px;
+
+    padding: 22px;
+
+    border:
+        1px solid rgba(212, 175, 55, 0.25);
+
+    border-radius: 13px;
+
+    background:
+        rgba(255, 255, 255, 0.035);
+}
+
+
+.checkout-section > h3 {
+
+    font-family: var(--heading);
+
+    color: var(--gold-light);
+
+    font-size: 19px;
+
+    margin-bottom: 18px;
+
+    border-bottom:
+        1px solid rgba(212, 175, 55, 0.25);
+
+    padding-bottom: 12px;
+}
+
+
+/* ==========================================
+   CHECKOUT ITEMS
+========================================== */
+
+.checkout-item {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 14px 0;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+.checkout-item:last-child {
+
+    border-bottom: none;
+}
+
+
+.checkout-item strong {
+
+    color: var(--white);
+
+    font-size: 15px;
+}
+
+
+.checkout-item p {
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+    margin-top: 5px;
+}
+
+
+.checkout-item > strong {
+
+    color: var(--gold);
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================
+   TOTAL
+========================================== */
+
+.checkout-total {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-top: 15px;
+
+    padding-top: 18px;
+
+    border-top:
+        1px solid var(--gold);
+}
+
+
+.checkout-total span {
+
+    font-size: 16px;
+
+    letter-spacing: 1px;
+}
+
+
+.checkout-total strong {
+
+    font-family: var(--heading);
+
+    color: var(--gold-light);
+
+    font-size: 23px;
+}
+
+
+/* ==========================================
+   FORM
+========================================== */
+
+.form-group {
+
+    margin-bottom: 18px;
+}
+
+
+.form-group label {
+
+    display: block;
+
+    color: var(--gold-light);
+
+    font-size: 13px;
+
+    margin-bottom: 7px;
+}
+
+
+.form-group input,
+.form-group textarea {
+
+    width: 100%;
+
+    padding: 13px 14px;
+
+    border:
+        1px solid rgba(212, 175, 55, 0.45);
+
+    border-radius: 8px;
+
+    background:
+        rgba(0, 0, 0, 0.65);
+
+    color: var(--white);
+
+    font-family: var(--body);
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+
+.form-group input:focus,
+.form-group textarea:focus {
+
+    border-color: var(--gold);
+
+    box-shadow:
+        0 0 8px rgba(212, 175, 55, 0.2);
+}
+
+
+.form-group textarea {
+
+    resize: vertical;
+
+    min-height: 90px;
+}
+
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+
+    color: #999;
+}
+
+
+/* ==========================================
+   PAYMENT INFO
+========================================== */
+
+.payment-info {
+
+    display: flex;
+
+    gap: 15px;
+
+    align-items: center;
+
+    padding: 18px;
+
+    margin-bottom: 22px;
+
+    border:
+        1px solid rgba(212, 175, 55, 0.35);
+
+    border-radius: 12px;
+
+    background:
+        rgba(212, 175, 55, 0.06);
+}
+
+
+.payment-icon {
+
+    font-size: 30px;
+}
+
+
+.payment-info h3 {
+
+    color: var(--gold-light);
+
+    font-family: var(--heading);
+
+    font-size: 16px;
+
+    margin-bottom: 5px;
+}
+
+
+.payment-info p {
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+/* ==========================================
+   PLACE ORDER BUTTON
+========================================== */
+
+.place-order-btn {
+
+    width: 100%;
+
+    padding: 16px;
+
+    border:
+        2px solid var(--gold);
+
+    border-radius: 40px;
+
+    background:
+        var(--red);
+
+    color: var(--white);
+
+    font-family: var(--heading);
+
+    font-size: 17px;
+
+    letter-spacing: 2px;
+
+    cursor: pointer;
+
+    transition: 0.25s;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.5);
+}
+
+
+.place-order-btn:hover {
+
+    background:
+        var(--red-light);
+
+    transform: translateY(-2px);
+}
+
+
+.place-order-btn:disabled {
+
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* ==========================================
+   MESSAGE
+========================================== */
+
+.checkout-message {
+
+    display: none;
+
+    margin-top: 18px;
+
+    padding: 15px;
+
+    border-radius: 10px;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+.checkout-message.success {
+
+    display: block;
+
+    background:
+        rgba(30, 120, 60, 0.2);
+
+    border:
+        1px solid rgba(80, 200, 110, 0.5);
+
+    color: #b8f5c8;
+}
+
+
+.checkout-message.error {
+
+    display: block;
+
+    background:
+        rgba(150, 20, 20, 0.2);
+
+    border:
+        1px solid rgba(220, 80, 80, 0.5);
+
+    color: #ffb5b5;
+}
+
+
+/* ==========================================
+   ORDER MORE BUTTON
+========================================== */
+
+.order-more-btn {
+
+    width: 100%;
+
+    margin-top: 18px;
+
+    padding: 14px;
+
+    border:
+        1px solid var(--gold);
+
+    border-radius: 30px;
+
+    background:
+        transparent;
+
+    color: var(--gold-light);
+
+    font-family: var(--heading);
+
+    font-size: 14px;
+
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+
+.order-more-btn:hover {
+
+    background:
+        rgba(212, 175, 55, 0.12);
+}
+
+
+/* ==========================================
+   FINAL BILL BUTTON
+========================================== */
+
+.bill-btn {
+
+    width: 100%;
+
+    margin-top: 12px;
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: 30px;
+
+    background:
+        var(--gold);
+
+    color: #160707;
+
+    font-family: var(--heading);
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+
+.bill-btn:hover {
+
+    background:
+        var(--gold-light);
+
+    transform: translateY(-2px);
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+
+    body {
+
+        background-attachment: scroll;
+    }
+
+
+    .top-header {
+
+        padding: 14px 12px;
+    }
+
+
+    .logo-circle {
+
+        width: 44px;
+
+        height: 44px;
+    }
+
+
+    .logo-circle span {
+
+        font-size: 20px;
+    }
+
+
+    .logo-text h1 {
+
+        font-size: 13px;
+
+        letter-spacing: 1px;
+    }
+
+
+    .logo-text p {
+
+        font-size: 6px;
+
+        letter-spacing: 2px;
+    }
+
+
+    .checkout-page {
+
+        padding:
+            20px 10px 50px;
+    }
+
+
+    .checkout-container {
+
+        padding: 20px 15px;
+
+        border-radius: 14px;
+    }
+
+
+    .checkout-title h2 {
+
+        font-size: 19px;
+    }
+
+
+    .checkout-title {
+
+        gap: 10px;
+    }
+
+
+    .checkout-section {
+
+        padding: 16px;
+    }
+
+
+    .table-info-card h3 {
+
+        font-size: 21px;
+    }
+
+
+    .payment-info {
+
+        align-items: flex-start;
+    }
+}
