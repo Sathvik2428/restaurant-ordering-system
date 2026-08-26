@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Admin Dashboard - Rajathadri Palace</title>
+
+    <link rel="stylesheet" href="admin.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+</head>
+
+
+<body>
+
+    <!-- =====================================
+         HEADER
+    ====================================== -->
+
+    <header class="admin-header">
+
+        <div class="admin-brand">
+
+            <div class="admin-logo">
+                R
+            </div>
+
+            <div>
+
+                <h1>
+                    RAJATHADRI PALACE
+                </h1>
+
+                <p>
+                    HOTEL ADMIN DASHBOARD
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="admin-status">
+
+            <span class="status-dot"></span>
+
+            <span>
+                SYSTEM ONLINE
+            </span>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================
+         MAIN
+    ====================================== -->
+
+    <main class="admin-container">
+
+
+        <!-- PAGE TITLE -->
+
+        <section class="page-heading">
+
+            <div>
+
+                <h2>
+                    ORDER DASHBOARD
+                </h2>
+
+                <p>
+                    Manage and monitor customer orders
+                </p>
+
+            </div>
+
+
+            <button
+                id="refreshBtn"
+                class="refresh-btn"
+                onclick="loadOrders()"
+            >
+                ↻ REFRESH
+            </button>
+
+        </section>
+
+
+        <!-- =====================================
+             STATISTICS
+        ====================================== -->
+
+        <section class="stats-grid">
+
+
+            <div class="stat-card">
+
+                <span class="stat-label">
+                    TOTAL ORDERS
+                </span>
+
+                <strong id="totalOrders">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span class="stat-label">
+                    NEW
+                </span>
+
+                <strong id="newOrders">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span class="stat-label">
+                    PREPARING
+                </span>
+
+                <strong id="preparingOrders">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span class="stat-label">
+                    READY
+                </span>
+
+                <strong id="readyOrders">
+                    0
+                </strong>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- =====================================
+             FILTERS
+        ====================================== -->
+
+        <section class="filter-section">
+
+            <button
+                class="filter-btn active"
+                data-status="all"
+                onclick="filterOrders('all')"
+            >
+                ALL
+            </button>
+
+
+            <button
+                class="filter-btn"
+                data-status="new"
+                onclick="filterOrders('new')"
+            >
+                NEW
+            </button>
+
+
+            <button
+                class="filter-btn"
+                data-status="preparing"
+                onclick="filterOrders('preparing')"
+            >
+                PREPARING
+            </button>
+
+
+            <button
+                class="filter-btn"
+                data-status="ready"
+                onclick="filterOrders('ready')"
+            >
+                READY
+            </button>
+
+
+            <button
+                class="filter-btn"
+                data-status="served"
+                onclick="filterOrders('served')"
+            >
+                SERVED
+            </button>
+
+
+            <button
+                class="filter-btn"
+                data-status="cancelled"
+                onclick="filterOrders('cancelled')"
+            >
+                CANCELLED
+            </button>
+
+        </section>
+
+
+        <!-- =====================================
+             ORDERS
+        ====================================== -->
+
+        <section class="orders-section">
+
+            <div class="section-title">
+
+                <h2>
+                    CUSTOMER ORDERS
+                </h2>
+
+                <span id="orderCount">
+                    0 orders
+                </span>
+
+            </div>
+
+
+            <div id="ordersContainer">
+
+                <div class="loading">
+
+                    Loading orders...
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================
+         SUPABASE
+    ====================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="config.js"></script>
+
+    <script src="admin.js"></script>
+
+
+</body>
+
+</html>
