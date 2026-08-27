@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Order Status - Rajathadri Palace</title>
+
+    <link rel="stylesheet" href="checkout.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+
+    <header class="top-header">
+
+        <div class="logo-center">
+
+            <div class="logo-circle">
+                <span>R</span>
+            </div>
+
+            <div class="logo-text">
+                <h1>RAJATHADRI PALACE</h1>
+
+                <p>
+                    TRADITION • TASTE • TRUST
+                </p>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ORDER STATUS -->
+
+    <main class="checkout-page">
+
+        <div class="checkout-container">
+
+            <!-- TITLE -->
+
+            <div class="checkout-title">
+
+                <span>◆</span>
+
+                <h2>ORDER STATUS</h2>
+
+                <span>◆</span>
+
+            </div>
+
+
+            <!-- ORDER INFORMATION -->
+
+            <section class="checkout-section">
+
+                <h3>Your Order</h3>
+
+                <div id="orderInformation">
+
+                    <p>Loading order...</p>
+
+                </div>
+
+            </section>
+
+
+            <!-- STATUS -->
+
+            <section class="checkout-section">
+
+                <h3>Order Progress</h3>
+
+                <div id="orderStatus">
+
+                    <p>Checking status...</p>
+
+                </div>
+
+            </section>
+
+
+            <!-- ORDER MORE -->
+
+            <button
+                id="orderMoreBtn"
+                class="order-more-btn"
+                onclick="orderMore()"
+            >
+                + ORDER MORE FOOD
+            </button>
+
+
+            <!-- FINAL BILL -->
+
+            <button
+                id="billBtn"
+                class="bill-btn"
+                onclick="requestBill()"
+            >
+                🧾 REQUEST FINAL BILL
+            </button>
+
+
+            <!-- MESSAGE -->
+
+            <div
+                id="statusMessage"
+                class="checkout-message"
+            ></div>
+
+        </div>
+
+    </main>
+
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="config.js"></script>
+
+    <script src="order-status.js"></script>
+
+</body>
+
+</html>
