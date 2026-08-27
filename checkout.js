@@ -747,7 +747,7 @@ async function placeOrder() {
         );
 
 
-        // ----------------------------------
+// ----------------------------------
 // SUCCESS
 // ----------------------------------
 
@@ -785,6 +785,9 @@ setTimeout(function () {
         );
 
 }, 1000);
+
+}
+catch (error) {
 
         console.error(
             "FULL CHECKOUT ERROR:",
