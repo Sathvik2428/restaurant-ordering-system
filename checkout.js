@@ -748,88 +748,43 @@ async function placeOrder() {
 
 
         // ----------------------------------
-        // Success
-        // ----------------------------------
+// SUCCESS
+// ----------------------------------
 
-        showMessage(
+showMessage(
 
-            "Order placed successfully! " +
-            "Order number: " +
-            data.order_number,
+    "Order placed successfully! " +
+    "Order number: " +
+    data.order_number,
 
-            "success"
+    "success"
 
+);
+
+
+// ----------------------------------
+// SAVE ORDER TOKEN
+// ----------------------------------
+
+localStorage.setItem(
+    "rajathadri_order_token",
+    data.order_token
+);
+
+
+// ----------------------------------
+// OPEN ORDER STATUS PAGE
+// ----------------------------------
+
+setTimeout(function () {
+
+    window.location.href =
+        "order-status.html?token=" +
+        encodeURIComponent(
+            data.order_token
         );
 
-
-        // Hide place order
-
-        button.style.display =
-            "none";
-
-
-        // Show order more
-
-        const orderMoreButton =
-            document.getElementById(
-                "orderMoreBtn"
-            );
-
-        if (orderMoreButton) {
-
-            orderMoreButton.style.display =
-                "block";
-
-        }
-
-
-        // Show final bill
-
-        const billButton =
-            document.getElementById(
-                "billBtn"
-            );
-
-        if (billButton) {
-
-            billButton.style.display =
-                "block";
-
-        }
-
-
-        // Clear displayed items
-
-        document.getElementById(
-            "checkoutItems"
-        ).innerHTML = `
-
-            <p class="order-success-text">
-
-                ✓ Your order has been sent
-                to the hotel.
-
-            </p>
-
-            <p>
-
-                You can order more food
-                whenever you want.
-
-            </p>
-
-        `;
-
-
-        document.getElementById(
-            "checkoutTotal"
-        ).textContent =
-            "₹0";
-
-
-    }
-
-    catch (error) {
+}, 1000);
 
         console.error(
             "FULL CHECKOUT ERROR:",
