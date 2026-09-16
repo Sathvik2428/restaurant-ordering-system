@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kitchen Live Orders | Rajathadri Palace</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #d97706;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --green: #10b981;
+      --blue: #3b82f6;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    h1 { margin: 0; font-size: 1.5rem; color: #fbbf24; }
+    #sound-banner {
+      background: #dc2626;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      display: inline-block;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .ticket {
+      background: var(--card-bg);
+      border-radius: 8px;
+      border-left: 6px solid var(--accent);
+      padding: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .ticket.preparing { border-left-color: var(--blue); }
+    .ticket.served { border-left-color: var(--green); opacity: 0.6; }
+    .ticket-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px dashed #334155;
+      padding-bottom: 8px;
+    }
+    .table-tag { font-size: 1.4rem; font-weight: 800; color: #f59e0b; }
+    .items-list { margin: 15px 0; padding: 0; list-style: none; }
+    .items-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid #283548;
+    }
+    .qty { font-weight: bold; color: #38bdf8; margin-right: 8px; }
+    .actions { display: flex; gap: 8px; margin-top: 10px; }
+    button.action-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      background: #334155;
+      color: white;
+    }
+    button.action-btn:hover { opacity: 0.9; }
+    .btn-prep { background: var(--blue); }
+    .btn-done { background: var(--green); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <h1>RAJATHADRI PALACE — Kitchen Display</h1>
+      <small style="color: var(--text-muted);">Auto-refreshes in real-time</small>
+    </div>
+    <div id="sound-banner">🔔 Click to Enable Order Chime</div>
+  </header>
+
+  <div class="grid" id="orders-container">
+    <!-- Live cards populate here -->
+  </div>
+
+  <script type="module">
+    import { db, collection, onSnapshot, query, orderBy, updateDoc, doc } from "./firebase-config.js";
+
+    let audioEnabled = false;
+    const soundBanner = document.getElementById("sound-banner");
+    const container = document.getElementById("orders-container");
+
+    // Synthesize two-tone kitchen chime using Web Audio API
+    function playKitchenChime() {
+      if (!audioEnabled) return;
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        const osc1 = audioCtx.createOscillator();
+        const gain1 = audioCtx.createGain();
+        osc1.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+        gain1.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.5);
+        osc1.connect(gain1);
+        gain1.connect(audioCtx.destination);
+        osc1.start();
+        osc1.stop(audioCtx.currentTime + 0.5);
+
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.frequency.setValueAtTime(880, audioCtx.currentTime + 0.15); // A5
+        gain2.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.8);
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.start(audioCtx.currentTime + 0.15);
+        osc2.stop(audioCtx.currentTime + 0.8);
+      } catch (err) {
+        console.warn("Audio playback blocked:", err);
+      }
+    }
+
+    // Browsers require 1 user click to permit audio autoplay
+    soundBanner.addEventListener("click", () => {
+      audioEnabled = true;
+      soundBanner.style.background = "#10b981";
+      soundBanner.textContent = "🔊 Sound Alerts Active";
+      playKitchenChime();
+    });
+
+    // Subscribe to Firestore 'orders' query
+    const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+    let initialLoad = true;
+
+    onSnapshot(q, (snapshot) => {
+      // Trigger chime only on genuine new additions after page load
+      if (!initialLoad) {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === "added") {
+            playKitchenChime();
+          }
+        });
+      }
+      initialLoad = false;
+
+      container.innerHTML = "";
+
+      snapshot.forEach((orderDoc) => {
+        const order = orderDoc.data();
+        const id = orderDoc.id;
+
+        // Skip completed/cleared orders
+        if (order.status === "Billed") return;
+
+        const card = document.createElement("div");
+        card.className = `ticket ${order.status.toLowerCase()}`;
+
+        const itemsHtml = (order.items || [])
+          .map(item => `
+            <li>
+              <span><span class="qty">${item.quantity}x</span>${item.name}</span>
+              <span>₹${item.price * item.quantity}</span>
+            </li>
+          `).join("");
+
+        card.innerHTML = `
+          <div>
+            <div class="ticket-header">
+              <span class="table-tag">TABLE ${order.table}</span>
+              <span style="font-size:0.85rem; color:var(--text-muted);">${order.status.toUpperCase()}</span>
+            </div>
+            <p style="margin: 6px 0; font-size: 0.85rem; color: var(--text-muted);">
+              Guest: ${order.customer?.name || "Diner"} • ₹${order.total || 0}
+            </p>
+            <ul class="items-list">
+              ${itemsHtml}
+            </ul>
+          </div>
+          <div class="actions">
+            ${order.status === "Pending" ? `<button class="action-btn btn-prep" data-id="${id}" data-status="Preparing">Mark Preparing</button>` : ""}
+            ${order.status === "Preparing" ? `<button class="action-btn btn-done" data-id="${id}" data-status="Served">Mark Served</button>` : ""}
+            <button class="action-btn" data-id="${id}" data-status="Billed">Clear / Billed</button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      // Attach status click listeners
+      document.querySelectorAll(".action-btn").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+          const docId = e.target.getAttribute("data-id");
+          const nextStatus = e.target.getAttribute("data-status");
+          await updateDoc(doc(db, "orders", docId), { status: nextStatus });
+        });
+      });
+    });
+  </script>
+</body>
+</html>
