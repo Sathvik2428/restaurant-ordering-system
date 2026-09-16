@@ -227,6 +227,65 @@
 
     <script src="checkout.js"></script>
 
+    <!-- Include this before the closing </body> tag of checkout.html -->
+    <script type="module">
+  import { db, collection, addDoc, serverTimestamp } from "./firebase-config.js";
+
+  // 1. Extract table number from URL query: checkout.html?table=3
+  const urlParams = new URLSearchParams(window.location.search);
+  const tableNumber = urlParams.get("table") || "Takeaway";
+
+  // Update table number in your UI header if the element exists
+  const tableDisplay = document.querySelector("h3");
+  if (tableDisplay && tableDisplay.textContent.includes("TABLE")) {
+    tableDisplay.textContent = `TABLE ${tableNumber}`;
+  }
+
+  // 2. Reference your confirm order button and form inputs
+  const confirmBtn = document.getElementById("confirm-order-btn") || document.querySelector("button");
+
+  confirmBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    // Pull cart data (assuming you save cart in localStorage from menu.html)
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    if (cart.length === 0) {
+      alert("Your cart is empty!");
+      return;
+    }
+
+    const customerName = document.getElementById("customer-name")?.value || "Guest";
+    const customerPhone = document.getElementById("customer-phone")?.value || "N/A";
+    const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    confirmBtn.disabled = true;
+    confirmBtn.innerText = "Placing Order...";
+
+    try {
+      // 3. Write document to Firestore 'orders' collection
+      const docRef = await addDoc(collection(db, "orders"), {
+        table: tableNumber,
+        customer: {
+          name: customerName,
+          phone: customerPhone
+        },
+        items: cart,
+        total: totalAmount,
+        status: "Pending", // Pending -> Preparing -> Served
+        createdAt: serverTimestamp()
+      });
+
+      // 4. Clear cart and redirect
+      localStorage.removeItem("cart");
+      window.location.href = `order-history.html?orderId=${docRef.id}&table=${tableNumber}`;
+    } catch (error) {
+      console.error("Error submitting order: ", error);
+      alert("Failed to place order. Please try again or inform the counter.");
+      confirmBtn.disabled = false;
+      confirmBtn.innerText = "Confirm Order";
+    }
+  });
+</script>
 </body>
 
 </html>
