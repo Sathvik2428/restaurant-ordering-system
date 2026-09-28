@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order History - Rajathadri Palace</title>
+  <link rel="stylesheet" href="checkout.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <header class="top-header">
+    <div class="logo-center">
+      <div class="logo-circle"><span>R</span></div>
+      <div class="logo-text">
+        <h1>RAJATHADRI PALACE</h1>
+        <p>TRADITION • TASTE • TRUST</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="checkout-page">
+    <div class="checkout-container">
+      <div class="checkout-title">
+        <span>◆</span>
+        <h2>TABLE ORDERS</h2>
+        <span>◆</span>
+      </div>
+
+      <div class="table-info-card">
+        <p>CURRENT SESSION</p>
+        <h3 id="historyTableTitle">TABLE -</h3>
+      </div>
+
+      <div id="historyList">
+        <p style="text-align: center; color: #888;">Fetching table orders...</p>
+      </div>
+
+      <button class="order-more-btn" onclick="window.location.href='menu.html'">+ ORDER MORE FOOD</button>
+      <button id="requestBillBtn" class="bill-btn" onclick="requestSessionBill()">🧾 REQUEST FINAL BILL</button>
+      <div id="historyMessage" class="checkout-message"></div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="order-history.js"></script>
+</body>
+</html>
