@@ -661,7 +661,7 @@ async function placeOrder() {
             // Payment happens at the end
 
             payment_method:
-                null,
+                "pay_later",
 
             payment_status:
                 "pending",
