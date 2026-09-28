@@ -16,109 +16,61 @@
 <body>
 
     <!-- HEADER -->
-
     <header class="top-header">
-
         <div class="logo-center">
-
             <div class="logo-circle">
                 <span>R</span>
             </div>
-
             <div class="logo-text">
-
                 <h1>RAJATHADRI PALACE</h1>
-
-                <p>
-                    TRADITION • TASTE • TRUST
-                </p>
-
+                <p>TRADITION • TASTE • TRUST</p>
             </div>
-
         </div>
-
     </header>
 
-
     <!-- CHECKOUT -->
-
     <main class="checkout-page">
-
         <div class="checkout-container">
-
             <div class="checkout-title">
-
                 <span>◆</span>
-
                 <h2>CONFIRM ORDER</h2>
-
                 <span>◆</span>
-
             </div>
 
-
             <!-- TABLE INFORMATION -->
-
             <div class="table-info-card">
-
                 <p>YOU ARE ORDERING FROM</p>
-
                 <h3 id="tableNumber">
                     TABLE -
                 </h3>
-
             </div>
 
-
             <!-- ORDER -->
-
             <section class="checkout-section">
-
                 <h3>Your Order</h3>
-
                 <div id="checkoutItems"></div>
 
                 <div class="checkout-total">
-
                     <span>Total</span>
-
-                    <strong id="checkoutTotal">
-                        ₹0
-                    </strong>
-
+                    <strong id="checkoutTotal">₹0</strong>
                 </div>
-
             </section>
 
-
             <!-- CUSTOMER DETAILS -->
-
             <section class="checkout-section">
-
                 <h3>Customer Details</h3>
-
                 <div class="form-group">
-
-                    <label for="customerName">
-                        Name
-                    </label>
-
+                    <label for="customerName">Name</label>
                     <input
                         type="text"
                         id="customerName"
                         placeholder="Enter your name"
                         required
                     >
-
                 </div>
 
-
                 <div class="form-group">
-
-                    <label for="customerPhone">
-                        Mobile Number
-                    </label>
-
+                    <label for="customerPhone">Mobile Number</label>
                     <input
                         type="tel"
                         id="customerPhone"
@@ -126,54 +78,32 @@
                         maxlength="10"
                         required
                     >
-
                 </div>
 
-
                 <div class="form-group">
-
-                    <label for="orderNotes">
-                        Special Request
-                    </label>
-
+                    <label for="orderNotes">Special Request</label>
                     <textarea
                         id="orderNotes"
                         placeholder="Any special request?"
                         rows="3"
                     ></textarea>
-
                 </div>
-
             </section>
 
-
             <!-- PAYMENT INFORMATION -->
-
             <section class="payment-info">
-
-                <div class="payment-icon">
-                    🧾
-                </div>
-
+                <div class="payment-icon">🧾</div>
                 <div>
-
-                    <h3>
-                        Pay at the end
-                    </h3>
-
+                    <h3>Pay at the end</h3>
                     <p>
                         You don't need to pay for this order now.
                         You can order more food later and pay the
                         complete table bill together.
                     </p>
-
                 </div>
-
             </section>
 
-
             <!-- PLACE ORDER -->
-
             <button
                 id="placeOrderBtn"
                 class="place-order-btn"
@@ -182,17 +112,10 @@
                 PLACE ORDER
             </button>
 
-
             <!-- MESSAGE -->
-
-            <div
-                id="checkoutMessage"
-                class="checkout-message"
-            ></div>
-
+            <div id="checkoutMessage" class="checkout-message"></div>
 
             <!-- ORDER MORE -->
-
             <button
                 id="orderMoreBtn"
                 class="order-more-btn"
@@ -202,9 +125,7 @@
                 + ORDER MORE FOOD
             </button>
 
-
             <!-- FINAL BILL -->
-
             <button
                 id="billBtn"
                 class="bill-btn"
@@ -213,23 +134,13 @@
             >
                 🧾 REQUEST FINAL BILL
             </button>
-
         </div>
-
     </main>
 
-
-    <!-- SUPABASE -->
-
-    <script>
-  const params = new URLSearchParams(window.location.search);
-  const table = params.get("table");
-  if (table) {
-    localStorage.setItem("rajathadri_table", table);
-    const tableDisplay = document.querySelector(".table-number");
-    if (tableDisplay) tableDisplay.textContent = "TABLE " + table;
-  }
-</script>
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="checkout.js"></script>
 </body>
 
 </html>
