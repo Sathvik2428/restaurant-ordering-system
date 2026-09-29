@@ -1,24 +1,19 @@
-// ================================
-// RAJATHADRI PALACE - MENU SCRIPT
-// ================================
 // ==========================================
-// TABLE NUMBER
+// TABLE SETUP & FRESH SESSION CHECK
 // ==========================================
+const urlParams = new URLSearchParams(window.location.search);
+const paramTable = urlParams.get("table");
+const storedTable = localStorage.getItem("rajathadri_table");
 
-const urlParams =
-    new URLSearchParams(
-        window.location.search
-    );
+// If customer scanned a different table or opened fresh from URL
+if (paramTable && paramTable !== storedTable) {
+    localStorage.removeItem("rajathadri_cart");
+    localStorage.removeItem("rajathadri_session_id");
+    localStorage.removeItem("rajathadri_order_token");
+}
 
-const TABLE_NUMBER =
-    urlParams.get("table") ||
-    localStorage.getItem("rajathadri_table") ||
-    "1";
-
-localStorage.setItem(
-    "rajathadri_table",
-    TABLE_NUMBER
-);
+const TABLE_NUMBER = paramTable || storedTable || "1";
+localStorage.setItem("rajathadri_table", TABLE_NUMBER);
 const MENU = {
     "Hot Beverages": [
         { name: "Coffee / Tea", price: 35 },
