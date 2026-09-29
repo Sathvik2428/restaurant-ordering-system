@@ -449,7 +449,69 @@ function escapeHtml(value) {
 document.addEventListener(
     "DOMContentLoaded",
     function () {
+// ==========================================
+// VIEW COMBINED TABLE BILL (FOR CASHIER/ADMIN)
+// ==========================================
 
+async function viewTableSessionBill(sessionId, tableNo) {
+    const { data: session } = await supabaseClient
+        .from("table_sessions")
+        .select("*")
+        .eq("id", sessionId)
+        .single();
+
+    const { data: sessionOrders } = await supabaseClient
+        .from("orders")
+        .select("*")
+        .eq("session_id", sessionId)
+        .neq("order_status", "cancelled");
+
+    if (!sessionOrders || sessionOrders.length === 0) {
+        alert("No active orders found for Table " + tableNo);
+        return;
+    }
+
+    let billItemsText = "";
+    let grandTotal = 0;
+
+    sessionOrders.forEach((ord, idx) => {
+        billItemsText += `\n--- ROUND ${idx + 1} (${ord.order_number}) ---\n`;
+        (ord.items || []).forEach(it => {
+            const lineTotal = Number(it.price) * Number(it.qty);
+            billItemsText += `${it.name} x ${it.qty} = ₹${lineTotal}\n`;
+        });
+        grandTotal += Number(ord.total);
+    });
+
+    const confirmPayment = confirm(
+        `RAJATHADRI PALACE - TABLE ${tableNo} FINAL BILL\n` +
+        `----------------------------------------\n` +
+        billItemsText +
+        `----------------------------------------\n` +
+        `GRAND TOTAL: ₹${grandTotal.toFixed(2)}\n\n` +
+        `Has the customer completed payment? Click OK to mark as PAID and CLOSE Table session.`
+    );
+
+    if (confirmPayment) {
+        // Mark session closed and orders as served
+        await supabaseClient
+            .from("table_sessions")
+            .update({
+                status: "closed",
+                payment_status: "paid",
+                closed_at: new Date().toISOString()
+            })
+            .eq("id", sessionId);
+
+        await supabaseClient
+            .from("orders")
+            .update({ payment_status: "paid" })
+            .eq("session_id", sessionId);
+
+        alert(`Table ${tableNo} session closed and marked PAID.`);
+        loadOrders();
+    }
+}
         loadOrders();
 
     }
