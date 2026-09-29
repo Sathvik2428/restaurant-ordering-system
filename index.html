@@ -43,5 +43,37 @@
             <h3 class="table-number">TABLE 5</h3>
         </div>
     </main>
+<script>
+    // 1. Read table from URL (e.g., ?table=1)
+    const urlParams = new URLSearchParams(window.location.search);
+    const tableNumber = urlParams.get("table");
+
+    if (tableNumber) {
+        // Check if the customer moved to a new table or is starting fresh
+        const storedTable = localStorage.getItem("rajathadri_table");
+        
+        if (storedTable !== tableNumber) {
+            // Clear previous cart & session so it freshly opens
+            localStorage.removeItem("rajathadri_cart");
+            localStorage.removeItem("rajathadri_session_id");
+            localStorage.removeItem("rajathadri_order_token");
+        }
+
+        // Save current table
+        localStorage.setItem("rajathadri_table", tableNumber);
+
+        // Update the display text on index.html
+        const tableCardHeading = document.querySelector(".table-number");
+        if (tableCardHeading) {
+            tableCardHeading.textContent = "TABLE " + tableNumber;
+        }
+
+        // Update the "Start Ordering" link to carry the table parameter
+        const orderBtn = document.querySelector(".btn-start-ordering");
+        if (orderBtn) {
+            orderBtn.href = "menu.html?table=" + encodeURIComponent(tableNumber);
+        }
+    }
+</script>
 </body>
 </html>
