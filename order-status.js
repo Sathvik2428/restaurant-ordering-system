@@ -49,8 +49,8 @@ async function loadTableSessionOrders() {
     }
 
     if (!currentSessionId) {
-        information.innerHTML = "<p>No active table session found.</p>";
-        statusContainer.innerHTML = "<p>Please add items from the menu first.</p>";
+        if (information) information.innerHTML = "<p>No active table session found.</p>";
+        if (statusContainer) statusContainer.innerHTML = "<p>Please add items from the menu first.</p>";
         return;
     }
 
@@ -65,8 +65,8 @@ async function loadTableSessionOrders() {
         if (error) throw error;
 
         if (!orders || orders.length === 0) {
-            information.innerHTML = "<p>No orders recorded in this session.</p>";
-            statusContainer.innerHTML = "";
+            if (information) information.innerHTML = "<p>No orders recorded in this session.</p>";
+            if (statusContainer) statusContainer.innerHTML = "";
             return;
         }
 
@@ -90,7 +90,7 @@ async function loadTableSessionOrders() {
 
             items.forEach(item => {
                 allItemsHTML += `
-                    <div class="order-item" style="padding: 3px 0;">
+                    <div class="order-item" style="padding: 3px 0; display:flex; justify-content:space-between;">
                         <span class="order-item-name">${escapeHtml(item.name)} × ${item.qty}</span>
                         <span class="order-item-qty">₹${(Number(item.price) * Number(item.qty)).toFixed(2)}</span>
                     </div>
@@ -101,25 +101,27 @@ async function loadTableSessionOrders() {
         });
 
         allItemsHTML += `
-            <div class="order-total" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #d4af37;">
+            <div class="order-total" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #d4af37; display:flex; justify-content:space-between;">
                 <span style="font-weight: 600;">COMBINED TOTAL (TABLE ${escapeHtml(TABLE_NUMBER)})</span>
                 <strong>₹${sessionGrandTotal.toFixed(2)}</strong>
             </div>
         `;
 
-        information.innerHTML = allItemsHTML;
+        if (information) information.innerHTML = allItemsHTML;
 
         const latestOrder = orders[orders.length - 1];
         renderOverallStatus(latestOrder.order_status, orders.length);
 
     } catch (err) {
-        console.error(err);
-        information.innerHTML = `<p>Error loading table orders: ${escapeHtml(err.message)}</p>`;
+        console.error("Error loading table orders:", err);
+        if (information) information.innerHTML = `<p>Error loading table orders: ${escapeHtml(err.message)}</p>`;
     }
 }
 
 function renderOverallStatus(currentStatus, roundsCount) {
     const status = document.getElementById("orderStatus");
+    if (!status) return;
+
     let html = `<p style="font-size: 0.85rem; color: #aaa; margin-bottom: 10px;">Total Rounds: <strong>${roundsCount}</strong> (Latest Status)</p>`;
 
     html += `<div class="order-progress">`;
@@ -144,17 +146,27 @@ function renderOverallStatus(currentStatus, roundsCount) {
 }
 
 // ------------------------------------------
-// FINAL BILL MODAL LOGIC
+// FINAL BILL MODAL LOGIC (CRASH-PROOF)
 // ------------------------------------------
 
-function openFinalBillModal() {
-    if (!cachedOrders || cachedOrders.length === 0) {
-        showMessage("No orders to bill yet.", "error");
+async function openFinalBillModal() {
+    const modal = document.getElementById("finalBillModal");
+    const container = document.getElementById("billBreakdownContent");
+
+    if (!modal || !container) {
+        alert("Bill modal elements not found in the HTML. Please ensure finalBillModal exists in order-status.html.");
         return;
     }
 
-    const modal = document.getElementById("finalBillModal");
-    const container = document.getElementById("billBreakdownContent");
+    // If orders aren't loaded into cache yet, fetch them immediately
+    if (!cachedOrders || cachedOrders.length === 0) {
+        await loadTableSessionOrders();
+    }
+
+    if (!cachedOrders || cachedOrders.length === 0) {
+        showMessage("No orders found for this session yet.", "error");
+        return;
+    }
 
     let breakdownHtml = `
         <div style="font-size: 0.9rem; margin-bottom: 12px; color: #bbb;">
@@ -165,7 +177,7 @@ function openFinalBillModal() {
     `;
 
     cachedOrders.forEach((ord, i) => {
-        breakdownHtml += `<p style="color: #d4af37; font-size: 0.85rem; margin-top: 6px;"><b>Round ${i + 1} (${ord.order_number})</b></p>`;
+        breakdownHtml += `<p style="color: #d4af37; font-size: 0.85rem; margin-top: 8px; margin-bottom: 4px;"><b>Round #${i + 1} (${escapeHtml(ord.order_number)})</b></p>`;
         (ord.items || []).forEach(item => {
             breakdownHtml += `
                 <div style="display:flex; justify-content:space-between; font-size: 0.85rem; color:#eee; padding: 2px 0;">
@@ -178,7 +190,7 @@ function openFinalBillModal() {
 
     breakdownHtml += `
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; font-size: 1.2rem; font-weight:700; color: #d4af37;">
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size: 1.2rem; font-weight:700; color: #d4af37; margin-bottom: 5px;">
             <span>Grand Total:</span>
             <span>₹${sessionGrandTotal.toFixed(2)}</span>
         </div>
@@ -186,17 +198,29 @@ function openFinalBillModal() {
 
     container.innerHTML = breakdownHtml;
 
-    // Create UPI deep-link URL (Works with PhonePe, GPay, Paytm on smartphones)
-    const upiLink = `upi://pay?pa=${encodeURIComponent(HOTEL_UPI_ID)}&pn=${encodeURIComponent(HOTEL_UPI_NAME)}&am=${sessionGrandTotal.toFixed(2)}&cu=INR&tn=${encodeURIComponent("Table " + TABLE_NUMBER + " Bill")}`;
+    // Build UPI deep-link with safety fallbacks
+    const upiId = (typeof HOTEL_UPI_ID !== "undefined" && HOTEL_UPI_ID) ? HOTEL_UPI_ID : "paytmqr2810050501011j86c2m4n5u7@paytm";
+    const upiName = (typeof HOTEL_UPI_NAME !== "undefined" && HOTEL_UPI_NAME) ? HOTEL_UPI_NAME : "RAJATHADRI PALACE";
+
+    const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiName)}&am=${sessionGrandTotal.toFixed(2)}&cu=INR&tn=${encodeURIComponent("Table " + TABLE_NUMBER + " Bill")}`;
 
     const upiBtn = document.getElementById("payUpiBtn");
-    upiBtn.href = upiLink;
+    if (upiBtn) {
+        upiBtn.href = upiLink;
+    }
 
     modal.classList.add("show");
 }
 
 function closeFinalBillModal() {
-    document.getElementById("finalBillModal").classList.remove("show");
+    const modal = document.getElementById("finalBillModal");
+    if (modal) modal.classList.remove("show");
+}
+
+function closeOnBackdrop(e) {
+    if (e.target.id === "finalBillModal") {
+        closeFinalBillModal();
+    }
 }
 
 // Option A: Cash Payment
@@ -212,10 +236,13 @@ async function chooseCashPayment() {
             })
             .eq("id", currentSessionId);
 
+        // Clear the cart from localStorage so next orders start at 0
+        localStorage.removeItem("rajathadri_cart");
+
         showMessage("Cash payment selected. Please pay ₹" + sessionGrandTotal.toFixed(2) + " at the counter or to your waiter.", "success");
         
         const billBtn = document.getElementById("billBtn");
-        billBtn.textContent = "⏳ CASH PAYMENT NOTIFIED TO COUNTER";
+        if (billBtn) billBtn.textContent = "⏳ CASH PAYMENT NOTIFIED TO COUNTER";
     } catch (err) {
         showMessage("Error notifying counter: " + err.message, "error");
     }
