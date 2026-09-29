@@ -13,92 +13,101 @@
         rel="stylesheet">
 
     <style>
-        /* BILL MODAL STYLING */
+        /* CRASH-PROOF BILL MODAL STYLING */
         .bill-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.85);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 15px;
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: rgba(0, 0, 0, 0.88) !important;
+            display: none !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 99999 !important;
+            padding: 20px !important;
+            backdrop-filter: blur(4px);
         }
 
         .bill-modal.show {
-            display: flex;
+            display: flex !important;
         }
 
         .bill-card {
-            width: min(500px, 100%);
-            max-height: 90vh;
-            overflow-y: auto;
-            background: #141414;
-            border: 1px solid var(--gold);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
+            width: min(500px, 95%) !important;
+            max-height: 85vh !important;
+            overflow-y: auto !important;
+            background: #141414 !important;
+            border: 2px solid #d4af37 !important;
+            border-radius: 16px !important;
+            padding: 22px !important;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9) !important;
+            color: #ffffff !important;
         }
 
         .bill-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
-            padding-bottom: 12px;
-            margin-bottom: 15px;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.4) !important;
+            padding-bottom: 12px !important;
+            margin-bottom: 16px !important;
         }
 
         .bill-card-header h2 {
-            font-family: var(--heading);
-            color: var(--gold);
-            font-size: 1.3rem;
+            font-family: 'Cinzel', serif !important;
+            color: #d4af37 !important;
+            font-size: 1.25rem !important;
+            margin: 0 !important;
         }
 
         .close-btn {
-            background: transparent;
-            border: none;
-            color: var(--gold);
-            font-size: 1.6rem;
-            cursor: pointer;
+            background: transparent !important;
+            border: none !important;
+            color: #d4af37 !important;
+            font-size: 1.8rem !important;
+            cursor: pointer !important;
+            line-height: 1 !important;
         }
 
         .payment-options {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            margin-top: 20px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 12px !important;
         }
 
         .btn-upi {
-            background: #15803d;
-            border: 1px solid #22c55e;
-            color: #fff;
-            padding: 14px;
-            border-radius: 30px;
-            font-family: var(--heading);
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            display: block;
+            background: #15803d !important;
+            border: 1px solid #22c55e !important;
+            color: #ffffff !important;
+            padding: 14px !important;
+            border-radius: 30px !important;
+            font-family: 'Cinzel', serif !important;
+            font-weight: 700 !important;
+            font-size: 0.9rem !important;
+            cursor: pointer !important;
+            text-align: center !important;
+            text-decoration: none !important;
+            display: block !important;
+            letter-spacing: 1px !important;
         }
 
         .btn-cash {
-            background: transparent;
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            padding: 14px;
-            border-radius: 30px;
-            font-family: var(--heading);
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
+            background: transparent !important;
+            border: 1px solid #d4af37 !important;
+            color: #d4af37 !important;
+            padding: 14px !important;
+            border-radius: 30px !important;
+            font-family: 'Cinzel', serif !important;
+            font-weight: 700 !important;
+            font-size: 0.9rem !important;
+            cursor: pointer !important;
+            letter-spacing: 1px !important;
+            width: 100% !important;
         }
 
-        .btn-upi:hover { background: #166534; }
-        .btn-cash:hover { background: rgba(212, 175, 55, 0.15); }
+        .btn-upi:hover { background: #166534 !important; }
+        .btn-cash:hover { background: rgba(212, 175, 55, 0.15) !important; }
     </style>
 </head>
 
@@ -168,15 +177,15 @@
     </main>
 
     <!-- BILL & PAYMENT POPUP MODAL -->
-    <div id="finalBillModal" class="bill-modal">
-        <div class="bill-card">
+    <div id="finalBillModal" class="bill-modal" onclick="closeOnBackdrop(event)">
+        <div class="bill-card" onclick="event.stopPropagation()">
             <div class="bill-card-header">
                 <h2>TABLE BILL BREAKDOWN</h2>
                 <button class="close-btn" onclick="closeFinalBillModal()">✕</button>
             </div>
 
             <div id="billBreakdownContent">
-                <!-- Dynamically populated with all rounds and total -->
+                <!-- Dynamically populated with orders -->
             </div>
 
             <div class="payment-options">
@@ -190,7 +199,7 @@
         </div>
     </div>
 
-    <!-- SUPABASE -->
+    <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <script src="order-status.js"></script>
