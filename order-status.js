@@ -146,7 +146,7 @@ function renderOverallStatus(currentStatus, roundsCount) {
 }
 
 // ------------------------------------------
-// FINAL BILL MODAL LOGIC (CRASH-PROOF)
+// FINAL BILL MODAL LOGIC
 // ------------------------------------------
 
 async function openFinalBillModal() {
@@ -154,17 +154,17 @@ async function openFinalBillModal() {
     const container = document.getElementById("billBreakdownContent");
 
     if (!modal || !container) {
-        alert("Bill modal elements not found in the HTML. Please ensure finalBillModal exists in order-status.html.");
+        alert("Bill modal elements not found in order-status.html.");
         return;
     }
 
-    // If orders aren't loaded into cache yet, fetch them immediately
+    // Load orders immediately if cache is empty
     if (!cachedOrders || cachedOrders.length === 0) {
         await loadTableSessionOrders();
     }
 
     if (!cachedOrders || cachedOrders.length === 0) {
-        showMessage("No orders found for this session yet.", "error");
+        showMessage("No active orders found for this session yet.", "error");
         return;
     }
 
@@ -198,7 +198,7 @@ async function openFinalBillModal() {
 
     container.innerHTML = breakdownHtml;
 
-    // Build UPI deep-link with safety fallbacks
+    // Safe fallback config parameters
     const upiId = (typeof HOTEL_UPI_ID !== "undefined" && HOTEL_UPI_ID) ? HOTEL_UPI_ID : "paytmqr2810050501011j86c2m4n5u7@paytm";
     const upiName = (typeof HOTEL_UPI_NAME !== "undefined" && HOTEL_UPI_NAME) ? HOTEL_UPI_NAME : "RAJATHADRI PALACE";
 
@@ -207,6 +207,14 @@ async function openFinalBillModal() {
     const upiBtn = document.getElementById("payUpiBtn");
     if (upiBtn) {
         upiBtn.href = upiLink;
+        upiBtn.onclick = function () {
+            // Clear local session storage when launching UPI payment app
+            setTimeout(() => {
+                localStorage.removeItem("rajathadri_cart");
+                localStorage.removeItem("rajathadri_session_id");
+                localStorage.removeItem("rajathadri_order_token");
+            }, 1200);
+        };
     }
 
     modal.classList.add("show");
@@ -223,7 +231,7 @@ function closeOnBackdrop(e) {
     }
 }
 
-// Option A: Cash Payment
+// Option A: Cash Payment at Counter
 async function chooseCashPayment() {
     closeFinalBillModal();
 
@@ -236,13 +244,18 @@ async function chooseCashPayment() {
             })
             .eq("id", currentSessionId);
 
-        // Clear the cart from localStorage so next orders start at 0
+        // Wipe local storage so new scans reset to Round #1
         localStorage.removeItem("rajathadri_cart");
+        localStorage.removeItem("rajathadri_session_id");
+        localStorage.removeItem("rajathadri_order_token");
 
         showMessage("Cash payment selected. Please pay ₹" + sessionGrandTotal.toFixed(2) + " at the counter or to your waiter.", "success");
-        
+
         const billBtn = document.getElementById("billBtn");
-        if (billBtn) billBtn.textContent = "⏳ CASH PAYMENT NOTIFIED TO COUNTER";
+        if (billBtn) {
+            billBtn.textContent = "⏳ CASH PAYMENT NOTIFIED TO COUNTER";
+            billBtn.disabled = true;
+        }
     } catch (err) {
         showMessage("Error notifying counter: " + err.message, "error");
     }
