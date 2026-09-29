@@ -5,90 +5,145 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Order Status - Rajathadri Palace</title>
+    <title>Order Status & Bill - Rajathadri Palace</title>
 
     <link rel="stylesheet" href="checkout.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
         rel="stylesheet">
+
+    <style>
+        /* BILL MODAL STYLING */
+        .bill-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+
+        .bill-modal.show {
+            display: flex;
+        }
+
+        .bill-card {
+            width: min(500px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+            background: #141414;
+            border: 1px solid var(--gold);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
+        }
+
+        .bill-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        .bill-card-header h2 {
+            font-family: var(--heading);
+            color: var(--gold);
+            font-size: 1.3rem;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: var(--gold);
+            font-size: 1.6rem;
+            cursor: pointer;
+        }
+
+        .payment-options {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-upi {
+            background: #15803d;
+            border: 1px solid #22c55e;
+            color: #fff;
+            padding: 14px;
+            border-radius: 30px;
+            font-family: var(--heading);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .btn-cash {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 14px;
+            border-radius: 30px;
+            font-family: var(--heading);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        .btn-upi:hover { background: #166534; }
+        .btn-cash:hover { background: rgba(212, 175, 55, 0.15); }
+    </style>
 </head>
 
 <body>
 
     <!-- HEADER -->
-
     <header class="top-header">
-
         <div class="logo-center">
-
             <div class="logo-circle">
                 <span>R</span>
             </div>
-
             <div class="logo-text">
                 <h1>RAJATHADRI PALACE</h1>
-
-                <p>
-                    TRADITION • TASTE • TRUST
-                </p>
+                <p>TRADITION • TASTE • TRUST</p>
             </div>
-
         </div>
-
     </header>
 
-
     <!-- ORDER STATUS -->
-
     <main class="checkout-page">
-
         <div class="checkout-container">
 
-            <!-- TITLE -->
-
             <div class="checkout-title">
-
                 <span>◆</span>
-
                 <h2>ORDER STATUS</h2>
-
                 <span>◆</span>
-
             </div>
 
-
             <!-- ORDER INFORMATION -->
-
             <section class="checkout-section">
-
-                <h3>Your Order</h3>
-
+                <h3>Your Table Orders</h3>
                 <div id="orderInformation">
-
-                    <p>Loading order...</p>
-
+                    <p>Loading table orders...</p>
                 </div>
-
             </section>
 
-
-            <!-- STATUS -->
-
+            <!-- PROGRESS STATUS -->
             <section class="checkout-section">
-
                 <h3>Order Progress</h3>
-
                 <div id="orderStatus">
-
                     <p>Checking status...</p>
-
                 </div>
-
             </section>
-
 
             <!-- ORDER MORE -->
-
             <button
                 id="orderMoreBtn"
                 class="order-more-btn"
@@ -97,36 +152,47 @@
                 + ORDER MORE FOOD
             </button>
 
-
-            <!-- FINAL BILL -->
-
+            <!-- FINAL BILL BUTTON -->
             <button
                 id="billBtn"
                 class="bill-btn"
-                onclick="requestBill()"
+                onclick="openFinalBillModal()"
             >
-                🧾 REQUEST FINAL BILL
+                🧾 VIEW FINAL BILL & PAY
             </button>
 
-
             <!-- MESSAGE -->
-
-            <div
-                id="statusMessage"
-                class="checkout-message"
-            ></div>
+            <div id="statusMessage" class="checkout-message"></div>
 
         </div>
-
     </main>
 
+    <!-- BILL & PAYMENT POPUP MODAL -->
+    <div id="finalBillModal" class="bill-modal">
+        <div class="bill-card">
+            <div class="bill-card-header">
+                <h2>TABLE BILL BREAKDOWN</h2>
+                <button class="close-btn" onclick="closeFinalBillModal()">✕</button>
+            </div>
+
+            <div id="billBreakdownContent">
+                <!-- Dynamically populated with all rounds and total -->
+            </div>
+
+            <div class="payment-options">
+                <a id="payUpiBtn" href="#" class="btn-upi">
+                    ⚡ PAY ONLINE (GPay / PhonePe / Paytm)
+                </a>
+                <button type="button" class="btn-cash" onclick="chooseCashPayment()">
+                    💵 PAY CASH AT COUNTER / RESTAURANT
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- SUPABASE -->
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script src="config.js"></script>
-
     <script src="order-status.js"></script>
 
 </body>
