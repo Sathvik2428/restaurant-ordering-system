@@ -67,9 +67,34 @@
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     let audioEnabled = false;
     let orders = [];
+    let wakeLock = null;
 
     const soundBanner = document.getElementById("soundBanner");
     const container = document.getElementById("ordersContainer");
+
+    // ==========================================
+    // SCREEN WAKE LOCK API (KEEPS TABLET AWAKE)
+    // ==========================================
+    async function requestScreenWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await navigator.wakeLock.request('screen');
+          console.log("Wake Lock active: Tablet display will stay ON.");
+          
+          wakeLock.addEventListener('release', () => {
+            console.log("Wake Lock released.");
+          });
+        }
+      } catch (err) {
+        console.warn("Wake Lock request failed:", err);
+      }
+    }
+
+    document.addEventListener("visibilitychange", async () => {
+      if (wakeLock !== null && document.visibilityState === "visible") {
+        await requestScreenWakeLock();
+      }
+    });
 
     function playChime() {
       if (!audioEnabled) return;
@@ -91,6 +116,7 @@
       soundBanner.style.background = "#15803d";
       soundBanner.textContent = "🔊 Audio Active";
       playChime();
+      requestScreenWakeLock();
     });
 
     async function fetchKitchenOrders() {
@@ -171,6 +197,7 @@
       if (sessionStorage.getItem("rajathadri_kitchen_auth") === "true") {
         document.getElementById("kitchenLockModal").style.display = "none";
         fetchKitchenOrders();
+        requestScreenWakeLock();
       } else {
         document.getElementById("kitchenLockModal").style.display = "flex";
         setTimeout(() => document.getElementById("kitchenPinInput").focus(), 100);
@@ -185,6 +212,7 @@
         sessionStorage.setItem("rajathadri_kitchen_auth", "true");
         document.getElementById("kitchenLockModal").style.display = "none";
         fetchKitchenOrders();
+        requestScreenWakeLock();
       } else {
         err.style.display = "block";
         document.getElementById("kitchenPinInput").value = "";
