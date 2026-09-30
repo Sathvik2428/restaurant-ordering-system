@@ -37,17 +37,19 @@
   </style>
 </head>
 <body>
-<!-- KITCHEN PIN LOCK OVERLAY -->
-<div id="kitchenLockModal" style="position:fixed; inset:0; background:#0f172a; z-index:999999; display:flex; align-items:center; justify-content:center; padding:20px;">
+
+  <!-- KITCHEN PIN LOCK OVERLAY -->
+  <div id="kitchenLockModal" style="position:fixed; inset:0; background:#0f172a; z-index:999999; display:flex; align-items:center; justify-content:center; padding:20px;">
     <div style="background:#1e293b; border:2px solid #38bdf8; border-radius:16px; padding:30px; text-align:center; max-width:340px; width:100%; box-shadow:0 10px 40px rgba(0,0,0,0.9);">
-        <div style="width:50px; height:50px; border:1px solid #38bdf8; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px auto; color:#38bdf8; font-size:1.5rem;">👨‍🍳</div>
-        <h2 style="color:#fbbf24; font-size:1.3rem; margin-bottom:8px;">KITCHEN DISPLAY</h2>
-        <p style="color:#94a3b8; font-size:0.85rem; margin-bottom:20px;">Enter Kitchen PIN to view tickets</p>
-        <input type="password" id="kitchenPinInput" maxlength="6" placeholder="Enter PIN" style="width:100%; text-align:center; font-size:1.4rem; letter-spacing:4px; padding:10px; border:1px solid #334155; border-radius:8px; background:#0f172a; color:#fff; outline:none; margin-bottom:15px;">
-        <button onclick="verifyKitchenPin()" style="width:100%; padding:12px; background:#38bdf8; color:#0f172a; border:none; border-radius:8px; font-weight:700; cursor:pointer;">UNLOCK</button>
-        <p id="kitchenPinErr" style="color:#ef4444; font-size:0.8rem; margin-top:12px; display:none;">Incorrect PIN. Try again.</p>
+      <div style="width:50px; height:50px; border:1px solid #38bdf8; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px auto; color:#38bdf8; font-size:1.5rem;">👨‍🍳</div>
+      <h2 style="color:#fbbf24; font-size:1.3rem; margin-bottom:8px;">KITCHEN DISPLAY</h2>
+      <p style="color:#94a3b8; font-size:0.85rem; margin-bottom:20px;">Enter Kitchen PIN to view tickets</p>
+      <input type="password" id="kitchenPinInput" maxlength="6" placeholder="••••" style="width:100%; text-align:center; font-size:1.4rem; letter-spacing:4px; padding:10px; border:1px solid #334155; border-radius:8px; background:#0f172a; color:#fff; outline:none; margin-bottom:15px;" autofocus>
+      <button onclick="verifyKitchenPin()" style="width:100%; padding:12px; background:#38bdf8; color:#0f172a; border:none; border-radius:8px; font-weight:700; cursor:pointer;">UNLOCK</button>
+      <p id="kitchenPinErr" style="color:#ef4444; font-size:0.8rem; margin-top:12px; display:none;">Incorrect PIN. Try again.</p>
     </div>
-</div>
+  </div>
+
   <header>
     <div>
       <h1>RAJATHADRI PALACE — Kitchen Orders</h1>
@@ -56,11 +58,12 @@
     <button id="soundBanner">🔔 Enable Audio Alerts</button>
   </header>
 
-  <div class="grid" id="ordersContainer">Loading live orders...</div>
+  <div class="grid" id="ordersContainer">Authenticate to view live tickets...</div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script>
+    const KITCHEN_PIN = "1234";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     let audioEnabled = false;
     let orders = [];
@@ -91,6 +94,8 @@
     });
 
     async function fetchKitchenOrders() {
+      if (sessionStorage.getItem("rajathadri_kitchen_auth") !== "true") return;
+
       const { data, error } = await supabaseClient
         .from("orders")
         .select("*")
@@ -155,41 +160,43 @@
     supabaseClient
       .channel("kitchen-realtime")
       .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, (payload) => {
-        if (payload.eventType === "INSERT") playChime();
-        fetchKitchenOrders();
+        if (sessionStorage.getItem("rajathadri_kitchen_auth") === "true") {
+          if (payload.eventType === "INSERT") playChime();
+          fetchKitchenOrders();
+        }
       })
       .subscribe();
 
-    fetchKitchenOrders();
-  </script>
-  <script>
-    const KITCHEN_PIN = "1234"; // Set your custom kitchen passcode here
-
     function checkKitchenAuth() {
-        if (sessionStorage.getItem("rajathadri_kitchen_auth") === "true") {
-            document.getElementById("kitchenLockModal").style.display = "none";
-        }
+      if (sessionStorage.getItem("rajathadri_kitchen_auth") === "true") {
+        document.getElementById("kitchenLockModal").style.display = "none";
+        fetchKitchenOrders();
+      } else {
+        document.getElementById("kitchenLockModal").style.display = "flex";
+        setTimeout(() => document.getElementById("kitchenPinInput").focus(), 100);
+      }
     }
 
     function verifyKitchenPin() {
-        const input = document.getElementById("kitchenPinInput").value.trim();
-        const err = document.getElementById("kitchenPinErr");
+      const input = document.getElementById("kitchenPinInput").value.trim();
+      const err = document.getElementById("kitchenPinErr");
 
-        if (input === KITCHEN_PIN) {
-            sessionStorage.setItem("rajathadri_kitchen_auth", "true");
-            document.getElementById("kitchenLockModal").style.display = "none";
-            if (typeof fetchKitchenOrders === "function") fetchKitchenOrders();
-        } else {
-            err.style.display = "block";
-            document.getElementById("kitchenPinInput").value = "";
-        }
+      if (input === KITCHEN_PIN) {
+        sessionStorage.setItem("rajathadri_kitchen_auth", "true");
+        document.getElementById("kitchenLockModal").style.display = "none";
+        fetchKitchenOrders();
+      } else {
+        err.style.display = "block";
+        document.getElementById("kitchenPinInput").value = "";
+        document.getElementById("kitchenPinInput").focus();
+      }
     }
 
     document.getElementById("kitchenPinInput").addEventListener("keypress", (e) => {
-        if (e.key === "Enter") verifyKitchenPin();
+      if (e.key === "Enter") verifyKitchenPin();
     });
 
     checkKitchenAuth();
-</script>
+  </script>
 </body>
 </html>
