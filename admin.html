@@ -56,7 +56,7 @@
             </button>
         </section>
 
-        <!-- STATISTICS -->
+        <!-- STATISTICS (LIVE COUNTERS) -->
         <section class="stats-grid">
             <div class="stat-card">
                 <span class="stat-label">TOTAL ORDERS</span>
@@ -76,7 +76,47 @@
             </div>
         </section>
 
-        <!-- FILTERS -->
+        <!-- =====================================
+             SALES REVENUE & ANALYTICS REPORT
+        ====================================== -->
+        <section style="background: #141414; border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 12px; padding: 22px; margin: 25px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom: 20px;">
+                <div>
+                    <h2 style="font-family:'Cinzel', serif; color:#d4af37; font-size:1.3rem; margin-bottom:4px; letter-spacing: 0.5px;">REVENUE & SALES REPORT</h2>
+                    <p style="color:#aaa; font-size:0.85rem; margin:0;">Track earnings, total volume, Cash vs Online collections</p>
+                </div>
+                
+                <!-- Period Filter Buttons -->
+                <div style="display:flex; gap:8px; flex-wrap: wrap;">
+                    <button class="filter-btn active" onclick="calculateRevenue('today')" id="btnToday">TODAY</button>
+                    <button class="filter-btn" onclick="calculateRevenue('week')" id="btnWeek">THIS WEEK</button>
+                    <button class="filter-btn" onclick="calculateRevenue('month')" id="btnMonth">THIS MONTH</button>
+                    <button class="filter-btn" onclick="calculateRevenue('year')" id="btnYear">THIS YEAR</button>
+                </div>
+            </div>
+
+            <!-- Revenue Breakdown Cards -->
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 15px;">
+                <div class="stat-card" style="border-left: 4px solid #d4af37; background: #181818; padding: 15px; border-radius: 8px;">
+                    <span class="stat-label" style="font-size:0.75rem; color:#aaa; font-weight:600; letter-spacing:0.5px;">TOTAL REVENUE</span>
+                    <strong id="repTotalRevenue" style="color: #d4af37; font-size: 1.6rem; display:block; margin-top:5px;">₹0.00</strong>
+                </div>
+                <div class="stat-card" style="border-left: 4px solid #22c55e; background: #181818; padding: 15px; border-radius: 8px;">
+                    <span class="stat-label" style="font-size:0.75rem; color:#aaa; font-weight:600; letter-spacing:0.5px;">ONLINE / UPI</span>
+                    <strong id="repOnlineRevenue" style="color: #22c55e; font-size: 1.6rem; display:block; margin-top:5px;">₹0.00</strong>
+                </div>
+                <div class="stat-card" style="border-left: 4px solid #38bdf8; background: #181818; padding: 15px; border-radius: 8px;">
+                    <span class="stat-label" style="font-size:0.75rem; color:#aaa; font-weight:600; letter-spacing:0.5px;">CASH COLLECTED</span>
+                    <strong id="repCashRevenue" style="color: #38bdf8; font-size: 1.6rem; display:block; margin-top:5px;">₹0.00</strong>
+                </div>
+                <div class="stat-card" style="border-left: 4px solid #f59e0b; background: #181818; padding: 15px; border-radius: 8px;">
+                    <span class="stat-label" style="font-size:0.75rem; color:#aaa; font-weight:600; letter-spacing:0.5px;">COMPLETED ORDERS</span>
+                    <strong id="repTotalOrdersCount" style="color: #f59e0b; font-size: 1.6rem; display:block; margin-top:5px;">0</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATUS FILTERS -->
         <section class="filter-section">
             <button class="filter-btn active" data-status="all" onclick="filterOrders('all')">ALL</button>
             <button class="filter-btn" data-status="new" onclick="filterOrders('new')">NEW</button>
@@ -86,7 +126,7 @@
             <button class="filter-btn" data-status="cancelled" onclick="filterOrders('cancelled')">CANCELLED</button>
         </section>
 
-        <!-- ORDERS -->
+        <!-- ORDERS LIST -->
         <section class="orders-section">
             <div class="section-title">
                 <h2>CUSTOMER ORDERS</h2>
@@ -136,7 +176,6 @@
             if (e.key === "Enter") verifyAdminPin();
         });
 
-        // Run validation immediately on load
         window.addEventListener("DOMContentLoaded", checkAuthAndLoad);
     </script>
 
