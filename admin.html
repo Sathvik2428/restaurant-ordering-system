@@ -23,7 +23,17 @@
 
 
 <body>
-
+<!-- STAFF PIN LOCK OVERLAY -->
+<div id="pinLockModal" style="position:fixed; inset:0; background:#0a0a0a; z-index:999999; display:flex; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#161616; border:2px solid #d4af37; border-radius:16px; padding:30px; text-align:center; max-width:340px; width:100%; box-shadow:0 10px 40px rgba(0,0,0,0.9);">
+        <div style="width:50px; height:50px; border:1px solid #d4af37; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px auto; color:#d4af37; font-size:1.5rem;">🔒</div>
+        <h2 style="font-family:'Cinzel', serif; color:#d4af37; font-size:1.3rem; margin-bottom:8px;">STAFF PORTAL</h2>
+        <p style="color:#aaa; font-size:0.85rem; margin-bottom:20px;">Enter Admin PIN to continue</p>
+        <input type="password" id="adminPinInput" maxlength="6" placeholder="Enter PIN" style="width:100%; text-align:center; font-size:1.4rem; letter-spacing:4px; padding:10px; border:1px solid #443a18; border-radius:8px; background:#080808; color:#fff; outline:none; margin-bottom:15px;">
+        <button onclick="verifyAdminPin()" style="width:100%; padding:12px; background:#d4af37; color:#111; border:none; border-radius:8px; font-weight:700; cursor:pointer;">UNLOCK</button>
+        <p id="pinErrorMsg" style="color:#ff6b6b; font-size:0.8rem; margin-top:12px; display:none;">Incorrect PIN. Try again.</p>
+    </div>
+</div>
     <!-- =====================================
          HEADER
     ====================================== -->
