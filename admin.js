@@ -1,401 +1,191 @@
 // ==========================================
 // RAJATHADRI PALACE
-// ADMIN DASHBOARD
+// ADMIN DASHBOARD & REVENUE ANALYTICS
 // ==========================================
 
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
-    );
-
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
 
 // ==========================================
-// VARIABLES
+// STATE VARIABLES
 // ==========================================
-
 let allOrders = [];
-
 let currentFilter = "all";
-
+let currentReportPeriod = "today";
 
 // ==========================================
 // LOAD ORDERS
 // ==========================================
-
 async function loadOrders() {
-
-    const container =
-        document.getElementById(
-            "ordersContainer"
-        );
-
-    container.innerHTML =
-        '<div class="loading">Loading orders...</div>';
-
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-
-        .from("orders")
-
-        .select("*")
-
-        .order(
-            "created_at",
-            {
-                ascending: false
-            }
-        );
-
-
-    if (error) {
-
-        console.error(
-            "Error loading orders:",
-            error
-        );
-
-        container.innerHTML = `
-            <div class="empty-orders">
-                Unable to load orders.<br>
-                ${escapeHtml(error.message)}
-            </div>
-        `;
-
+    // Only query database if staff is authenticated
+    if (sessionStorage.getItem("rajathadri_admin_auth") !== "true") {
         return;
     }
 
+    const container = document.getElementById("ordersContainer");
+    if (container && (!allOrders || allOrders.length === 0)) {
+        container.innerHTML = '<div class="loading">Loading orders...</div>';
+    }
+
+    const { data, error } = await supabaseClient
+        .from("orders")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("Error loading orders:", error);
+        if (container) {
+            container.innerHTML = `
+                <div class="empty-orders">
+                    Unable to load orders.<br>
+                    ${escapeHtml(error.message)}
+                </div>
+            `;
+        }
+        return;
+    }
 
     allOrders = data || [];
 
-
     updateStatistics();
-
     displayOrders();
-
+    calculateRevenue(currentReportPeriod);
 }
 
-
 // ==========================================
-// UPDATE STATISTICS
+// UPDATE REAL-TIME COUNTERS
 // ==========================================
-
 function updateStatistics() {
+    const totalEl = document.getElementById("totalOrders");
+    const newEl = document.getElementById("newOrders");
+    const prepEl = document.getElementById("preparingOrders");
+    const readyEl = document.getElementById("readyOrders");
 
-    document.getElementById(
-        "totalOrders"
-    ).textContent =
-        allOrders.length;
-
-
-    document.getElementById(
-        "newOrders"
-    ).textContent =
-        allOrders.filter(
-            order =>
-                order.order_status === "new"
-        ).length;
-
-
-    document.getElementById(
-        "preparingOrders"
-    ).textContent =
-        allOrders.filter(
-            order =>
-                order.order_status === "preparing"
-        ).length;
-
-
-    document.getElementById(
-        "readyOrders"
-    ).textContent =
-        allOrders.filter(
-            order =>
-                order.order_status === "ready"
-        ).length;
-
+    if (totalEl) totalEl.textContent = allOrders.length;
+    if (newEl) newEl.textContent = allOrders.filter(order => order.order_status === "new").length;
+    if (prepEl) prepEl.textContent = allOrders.filter(order => order.order_status === "preparing").length;
+    if (readyEl) readyEl.textContent = allOrders.filter(order => order.order_status === "ready").length;
 }
-
 
 // ==========================================
 // FILTER ORDERS
 // ==========================================
-
 function filterOrders(status) {
-
     currentFilter = status;
 
+    document.querySelectorAll(".filter-section .filter-btn").forEach(button => {
+        button.classList.remove("active");
+    });
 
-    document
-        .querySelectorAll(".filter-btn")
-        .forEach(button => {
-
-            button.classList.remove(
-                "active"
-            );
-
-        });
-
-
-    const activeButton =
-        document.querySelector(
-            `[data-status="${status}"]`
-        );
-
-
+    const activeButton = document.querySelector(`.filter-section [data-status="${status}"]`);
     if (activeButton) {
-
-        activeButton.classList.add(
-            "active"
-        );
-
+        activeButton.classList.add("active");
     }
-
 
     displayOrders();
-
 }
 
-
 // ==========================================
-// DISPLAY ORDERS
+// DISPLAY ORDERS CARDS
 // ==========================================
-
 function displayOrders() {
+    const container = document.getElementById("ordersContainer");
+    if (!container) return;
 
-    const container =
-        document.getElementById(
-            "ordersContainer"
-        );
-
-
-    let orders =
-        allOrders;
-
+    let orders = allOrders;
 
     if (currentFilter !== "all") {
-
-        orders =
-            allOrders.filter(
-                order =>
-                    order.order_status ===
-                    currentFilter
-            );
-
+        orders = allOrders.filter(order => order.order_status === currentFilter);
     }
 
-
-    document.getElementById(
-        "orderCount"
-    ).textContent =
-        orders.length +
-        (
-            orders.length === 1
-                ? " order"
-                : " orders"
-        );
-
+    const orderCountEl = document.getElementById("orderCount");
+    if (orderCountEl) {
+        orderCountEl.textContent = orders.length + (orders.length === 1 ? " order" : " orders");
+    }
 
     if (orders.length === 0) {
-
         container.innerHTML = `
             <div class="empty-orders">
                 No orders found.
             </div>
         `;
-
         return;
     }
 
-
     container.innerHTML = "";
 
-
-    orders.forEach(
-        order => {
-
-            container.appendChild(
-                createOrderCard(order)
-            );
-
-        }
-    );
-
+    orders.forEach(order => {
+        container.appendChild(createOrderCard(order));
+    });
 }
-
 
 // ==========================================
 // CREATE ORDER CARD
 // ==========================================
-
 function createOrderCard(order) {
+    const card = document.createElement("div");
+    card.className = "order-card";
 
-    const card =
-        document.createElement(
-            "div"
-        );
-
-
-    card.className =
-        "order-card";
-
-
-    const items =
-        Array.isArray(order.items)
-            ? order.items
-            : [];
-
-
+    const items = Array.isArray(order.items) ? order.items : [];
     let itemsHTML = "";
 
-
     items.forEach(item => {
-
         itemsHTML += `
-
             <div class="order-item">
-
                 <span class="order-item-name">
-
-                    ${escapeHtml(
-                        item.name
-                    )}
-
+                    ${escapeHtml(item.name)}
                 </span>
-
                 <span class="order-item-qty">
-
-                    × ${Number(
-                        item.qty
-                    )}
-
+                    × ${Number(item.qty)}
                 </span>
-
             </div>
-
         `;
-
     });
 
-
-    const status =
-        order.order_status ||
-        "new";
-
+    const status = order.order_status || "new";
 
     card.innerHTML = `
-
         <div class="order-top">
-
             <div>
-
                 <div class="order-number">
-
-                    ${escapeHtml(
-                        order.order_number
-                    )}
-
+                    ${escapeHtml(order.order_number)}
                 </div>
-
                 <div class="table-number">
-
-                    TABLE ${escapeHtml(
-                        order.table_no
-                    )}
-
+                    TABLE ${escapeHtml(order.table_no)}
                 </div>
-
             </div>
 
-
-            <span
-                class="
-                    order-status
-                    status-${escapeHtml(status)}
-                "
-            >
-
+            <span class="order-status status-${escapeHtml(status)}">
                 ${escapeHtml(status)}
-
             </span>
-
         </div>
-
 
         <div class="order-details">
-
-
             <div class="detail-box">
-
-                <span>
-                    CUSTOMER
-                </span>
-
-                <strong>
-                    ${escapeHtml(
-                        order.customer_name
-                    )}
-                </strong>
-
+                <span>CUSTOMER</span>
+                <strong>${escapeHtml(order.customer_name || "Guest")}</strong>
             </div>
 
-
             <div class="detail-box">
-
-                <span>
-                    PHONE
-                </span>
-
-                <strong>
-                    ${escapeHtml(
-                        order.customer_phone
-                    )}
-                </strong>
-
+                <span>PHONE</span>
+                <strong>${escapeHtml(order.customer_phone || "-")}</strong>
             </div>
 
-
             <div class="detail-box">
-
-                <span>
-                    PAYMENT
-                </span>
-
-                <strong>
-                    ${escapeHtml(
-                        order.payment_status ||
-                        "pending"
-                    )}
-                </strong>
-
+                <span>PAYMENT</span>
+                <strong>${escapeHtml(order.payment_status || "pending")}</strong>
             </div>
-
-
         </div>
-
 
         <div class="order-items">
-
             ${itemsHTML}
-
         </div>
 
-
         <div class="order-total">
-
-            <span>
-                TOTAL
-            </span>
-
-            <strong>
-                ₹${Number(
-                    order.total || 0
-                ).toFixed(2)}
-            </strong>
-
+            <span>TOTAL</span>
+            <strong>₹${Number(order.total || 0).toFixed(2)}</strong>
         </div>
 
         <button 
@@ -405,21 +195,15 @@ function createOrderCard(order) {
         >
             🧾 VIEW FULL TABLE BILL
         </button>
-
     `;
 
-
     return card;
-
 }
-
 
 // ==========================================
 // VIEW COMBINED TABLE BILL (FOR CASHIER/ADMIN)
 // ==========================================
-
 async function viewTableSessionBill(sessionId, tableNo) {
-
     if (!sessionId || sessionId === "null" || sessionId === "undefined") {
         alert("No active session linked to this order.");
         return;
@@ -465,7 +249,6 @@ async function viewTableSessionBill(sessionId, tableNo) {
 
     if (confirmPayment) {
         try {
-            // Update table_sessions
             await supabaseClient
                 .from("table_sessions")
                 .update({
@@ -475,7 +258,6 @@ async function viewTableSessionBill(sessionId, tableNo) {
                 })
                 .eq("id", sessionId);
 
-            // Update all child orders
             await supabaseClient
                 .from("orders")
                 .update({ payment_status: "paid" })
@@ -490,64 +272,102 @@ async function viewTableSessionBill(sessionId, tableNo) {
     }
 }
 
-
 // ==========================================
-// HTML ESCAPE
+// SALES & REVENUE REPORTING ENGINE
 // ==========================================
+async function calculateRevenue(period = "today") {
+    currentReportPeriod = period;
 
-function escapeHtml(value) {
+    // Toggle button active styling
+    ["today", "week", "month", "year"].forEach(p => {
+        const btn = document.getElementById("btn" + p.charAt(0).toUpperCase() + p.slice(1));
+        if (btn) btn.classList.remove("active");
+    });
+    const activeBtn = document.getElementById("btn" + period.charAt(0).toUpperCase() + period.slice(1));
+    if (activeBtn) activeBtn.classList.add("active");
 
-    return String(value ?? "")
+    // Establish date bounds
+    const now = new Date();
+    let startDate = new Date();
 
-        .replace(
-            /&/g,
-            "&amp;"
-        )
+    if (period === "today") {
+        startDate.setHours(0, 0, 0, 0);
+    } else if (period === "week") {
+        const day = now.getDay() || 7; // Monday = 1, Sunday = 7
+        startDate.setDate(now.getDate() - day + 1);
+        startDate.setHours(0, 0, 0, 0);
+    } else if (period === "month") {
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    } else if (period === "year") {
+        startDate = new Date(now.getFullYear(), 0, 1);
+    }
 
-        .replace(
-            /</g,
-            "&lt;"
-        )
+    try {
+        const { data: sales, error } = await supabaseClient
+            .from("orders")
+            .select("total, payment_status, created_at, order_status")
+            .gte("created_at", startDate.toISOString())
+            .neq("order_status", "cancelled");
 
-        .replace(
-            />/g,
-            "&gt;"
-        )
+        if (error) throw error;
 
-        .replace(
-            /"/g,
-            "&quot;"
-        )
+        let totalRevenue = 0;
+        let onlineRevenue = 0;
+        let cashRevenue = 0;
+        let count = sales ? sales.length : 0;
 
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+        (sales || []).forEach(order => {
+            const amount = Number(order.total || 0);
+            totalRevenue += amount;
 
+            const payStatus = String(order.payment_status || "").toLowerCase();
+            if (payStatus.includes("cash") || payStatus.includes("pending_cash")) {
+                cashRevenue += amount;
+            } else {
+                onlineRevenue += amount;
+            }
+        });
+
+        const repTotalEl = document.getElementById("repTotalRevenue");
+        const repOnlineEl = document.getElementById("repOnlineRevenue");
+        const repCashEl = document.getElementById("repCashRevenue");
+        const repOrdersEl = document.getElementById("repTotalOrdersCount");
+
+        if (repTotalEl) repTotalEl.textContent = "₹" + totalRevenue.toFixed(2);
+        if (repOnlineEl) repOnlineEl.textContent = "₹" + onlineRevenue.toFixed(2);
+        if (repCashEl) repCashEl.textContent = "₹" + cashRevenue.toFixed(2);
+        if (repOrdersEl) repOrdersEl.textContent = count;
+
+    } catch (err) {
+        console.error("Error computing sales report:", err);
+    }
 }
 
+// ==========================================
+// HTML ESCAPE UTILITY
+// ==========================================
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
 // ==========================================
-// START ADMIN DASHBOARD
+// START REALTIME LISTENER
 // ==========================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        loadOrders();
-
-        // Realtime auto-update on new or modified orders
-        supabaseClient
-            .channel("admin-orders-watch")
-            .on(
-                "postgres_changes",
-                { event: "*", schema: "public", table: "orders" },
-                () => {
-                    loadOrders();
-                }
-            )
-            .subscribe();
-
-    }
-);
+document.addEventListener("DOMContentLoaded", function () {
+    // Realtime auto-update on new or updated tickets
+    supabaseClient
+        .channel("admin-orders-watch")
+        .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "orders" },
+            () => {
+                loadOrders();
+            }
+        )
+        .subscribe();
+});
