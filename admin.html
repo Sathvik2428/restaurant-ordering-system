@@ -278,6 +278,36 @@
 
     <script src="admin.js"></script>
 
+    <script>
+    const ADMIN_PIN = "1234"; // Set your custom admin passcode here
+
+    function checkAuth() {
+        if (sessionStorage.getItem("rajathadri_admin_auth") === "true") {
+            document.getElementById("pinLockModal").style.display = "none";
+        }
+    }
+
+    function verifyAdminPin() {
+        const input = document.getElementById("adminPinInput").value.trim();
+        const err = document.getElementById("pinErrorMsg");
+        
+        if (input === ADMIN_PIN) {
+            sessionStorage.setItem("rajathadri_admin_auth", "true");
+            document.getElementById("pinLockModal").style.display = "none";
+            loadOrders(); // Loads orders immediately upon unlock
+        } else {
+            err.style.display = "block";
+            document.getElementById("adminPinInput").value = "";
+        }
+    }
+
+    // Allow pressing "Enter" key to submit PIN
+    document.getElementById("adminPinInput").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") verifyAdminPin();
+    });
+
+    checkAuth();
+</script>
 
 </body>
 
